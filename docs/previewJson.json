@@ -1,0 +1,5 @@
+{
+  "success": false,
+  "message": "Đã xảy ra lỗi khi tạo tài liệu.",
+  "error": "\nInvalid `prisma.document.create()` invocation:\n\n{\n  data: {\n    title: \"title\",\n    description: \"description\",\n    category: \"category\",\n+   user: {\n+     create: UserCreateWithoutDocumentsInput | UserUncheckedCreateWithoutDocumentsInput,\n+     connectOrCreate: UserCreateOrConnectWithoutDocumentsInput,\n+     connect: UserWhereUniqueInput\n+   }\n  }\n}\n\nArgument `user` is missing."
+}

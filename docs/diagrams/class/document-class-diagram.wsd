@@ -1,0 +1,109 @@
+@startuml Document Class Diagram
+
+entity Document {
+    + id : UUID <PK>
+    --
+    + userId : UUID <FK>
+    + categoryId : UUID <FK>
+    --
+    - title : String
+    - description : String?
+
+    - createdAt : Date
+    - updatedAt : Date
+
+    - bookmarkCount : int
+    - downloadCount : int
+
+    - ratingSum : int
+    - ratingCount : int
+    - averageRating : float
+}
+
+entity User {
+    + id : UUID <PK>
+    --
+    - username : String <unique> 
+    - email : String <unique>
+    - password : String
+
+    - role : Role
+    
+    - createdAt : Date
+    - updatedAt : Date
+
+    - isActive : Boolean
+    - emailVerified : Boolean
+    - lastLoginAt : Date
+}
+
+entity Bookmark {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK>
+    + userId : UUID <FK>
+    --
+    - createdAt : Date
+}
+
+entity Comment {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK>
+    + userId : UUID <FK>
+    ' Self-referencing relationship for threaded comments
+    + parentCommentId : UUID <FK>?
+    --
+    - content : String
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+entity Rating {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK> <unique>
+    + userId : UUID <FK> <unique>
+    --
+    - score : int
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+entity Category {
+    + id : UUID <PK>
+    --
+    - name : String <unique>
+
+    - description : String
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+entity File {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK>
+    --
+    - name : String
+    - type : String
+    - size : int
+
+    - objectKey : String
+    - url : String
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+User |o--o{ Document : "owns"
+Category ||--o{ Document : "contains"
+Document ||--o{ Bookmark : "has"
+Document ||--o{ Comment : "has"
+Document ||--o{ Rating : "has"
+Document ||--o{ File : "has"
+
+@enduml

@@ -1,0 +1,59 @@
+@startuml Comment Class Diagram
+
+entity Document {
+    + id : UUID <PK>
+    --
+    + userId : UUID <FK>
+    + categoryId : UUID <FK>
+    --
+    - title : String
+    - description : String?
+
+    - createdAt : Date
+    - updatedAt : Date
+
+    - bookmarkCount : int
+    - downloadCount : int
+
+    - ratingSum : int
+    - ratingCount : int
+    - averageRating : float
+}
+
+entity User {
+    + id : UUID <PK>
+    --
+    - username : String <unique> 
+    - email : String <unique>
+    - password : String
+
+    - role : Role
+    
+    - createdAt : Date
+    - updatedAt : Date
+
+    - isActive : Boolean
+    - emailVerified : Boolean
+    - lastLoginAt : Date
+}
+
+entity Comment {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK>
+    + userId : UUID <FK>
+    ' Self-referencing relationship for threaded comments
+    + parentCommentId : UUID <FK>?
+    --
+    - content : String
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+User ||--o{ Comment : "writes"
+Document ||--o{ Comment : "has"
+
+Comment ||--o{ Comment : "replies to"
+
+@enduml

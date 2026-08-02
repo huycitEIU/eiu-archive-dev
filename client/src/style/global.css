@@ -1,0 +1,40 @@
+/* global.css */
+:root {
+  /* EIU Color Palette */
+  --eiu-blue: #144069;
+  --eiu-gold: #a78656;
+  --eiu-neutral: #4e4e50;
+  --eiu-gold-soft: rgba(167, 134, 86, 0.3);
+  --eiu-red: #b44425;
+  --eiu-orange: #d88327;
+  --eiu-yellow: #efb31d;
+  --eiu-olive: #9d9133;
+  --eiu-green: #52813b;
+  --eiu-indigo: #4b479d;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0;
+  max-width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--eiu-neutral);
+  background-color: #ffffff;
+  margin: 0;
+  width: 100%;
+}
+html {
+  margin: 0;
+  width: 100%;
+  padding: 0;
+}
+a {
+  text-decoration: none;
+}

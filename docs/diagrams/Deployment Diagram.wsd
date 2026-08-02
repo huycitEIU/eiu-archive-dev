@@ -1,0 +1,30 @@
+@startuml DeploymentDiagram
+
+title Deployment Diagram for Document Management System
+
+node "Web Server" as serverNode {
+    node "Web Application" as webApp {
+        [Node.js / Express API] as backendApp
+    }
+}
+
+node "Database Server" as dbServer {
+    database "Database" as db
+}
+
+node "File Storage Server" as fileStorageServer {
+    folder "File Storage" as fileStorage
+}
+
+node "User's Device" as clientNode {
+    node "Web Browser" as browser {
+        [React SPA] as frontendApp
+    }
+}
+
+' Mối quan hệ và giao thức kết nối
+frontendApp -- backendApp : HTTPS / REST API
+backendApp -- db : TCP / JDBC (Port 5432)
+backendApp -- fileStorage : Local File System I/O
+
+@enduml

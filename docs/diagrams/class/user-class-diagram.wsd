@@ -1,0 +1,127 @@
+@startuml User Class Diagram
+
+enum Role {
+    STUDENT
+    TEACHER
+    ADMIN
+}
+
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+enum Theme {
+    LIGHT
+    DARK
+}
+
+enum Language {
+    EN
+    VI
+}
+
+entity User {
+    + id : UUID <PK>
+    --
+    - username : String <unique> 
+    - email : String <unique>
+    - password : String
+
+    - role : Role
+    
+    - createdAt : Date
+    - updatedAt : Date
+
+    - isActive : Boolean
+    - emailVerified : Boolean
+    - lastLoginAt : Date
+}
+
+entity UserProfile {
+    + id : UUID <PK>
+    --
+    + userId : UUID <FK>
+    --
+    - firstName : String?
+    - lastName : String?
+
+    - phoneNumber : String?
+    - address : String?
+    - city : String?
+    - country : String?
+
+    - dateOfBirth : Date?
+    - gender : Gender?
+    
+    - avatarUrl : String?
+    - bio : String?
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+entity UserSetting {
+    + id : UUID <PK>
+    --
+    + userId : UUID <FK>
+    --
+    - theme : Theme
+    - language : Language
+
+    - emailNotificationEnabled : Boolean
+    - pushNotificationEnabled : Boolean
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+entity Document {
+    + id : UUID <PK>
+    --
+    + userId : UUID <FK>
+    + categoryId : UUID <FK>
+    --
+    - title : String
+    - description : String?
+
+    - createdAt : Date
+    - updatedAt : Date
+
+    - bookmarkCount : int
+    - downloadCount : int
+
+    - ratingSum : int
+    - ratingCount : int
+    - averageRating : float
+}
+
+entity Bookmark {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK>
+    + userId : UUID <FK>
+    --
+    - createdAt : Date
+}
+
+entity Rating {
+    + id : UUID <PK>
+    --
+    + documentId : UUID <FK> <unique>
+    + userId : UUID <FK> <unique>
+    --
+    - score : int
+
+    - createdAt : Date
+    - updatedAt : Date
+}
+
+User ||--|| UserProfile : "has"
+User ||--|| UserSetting : "has"
+User |o--o{ Document : "owns"
+User |o--o{ Bookmark : "owns"
+User |o--o{ Rating : "owns"
+
+@enduml

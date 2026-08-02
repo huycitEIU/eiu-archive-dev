@@ -1,0 +1,30 @@
+@startuml RegisterSequenceDiagram
+    autonumber
+    actor "User" as user
+    participant "Client (App/Web)" as client
+    participant "Backend Server" as server
+    database "Database" as db
+
+    ' User đăng ký tài khoản
+    user -> client: Nhập thông tin đăng ký & nhấn "Register"
+    activate client
+    client -> server: POST /api/auth/register (chứa thông tin đăng ký)
+    activate server
+    server -> db: Kiểm tra thông tin đăng ký (email, username)
+    activate db
+    alt Thông tin đăng ký hợp lệ
+        db --> server: Thông tin hợp lệ
+        server -> db: Lưu thông tin người dùng mới
+        db --> server: Lưu thành công
+        server --> client: Trả về kết quả thành công (201 Created)
+        client --> user: Hiển thị "Đăng ký thành công"
+    else Thông tin đăng ký không hợp lệ
+        db --> server: Thông tin không hợp lệ (email đã tồn tại, username đã tồn tại)
+        server --> client: Trả về lỗi (400 Bad Request)
+        client --> user: Hiển thị thông báo lỗi
+    end
+    deactivate db
+    deactivate server
+    deactivate client
+
+@enduml

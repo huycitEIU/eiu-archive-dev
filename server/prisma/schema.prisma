@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Theme {
+  LIGHT
+  DARK
+}
+
+enum Language {
+  EN
+  VI
+}
+
+model User {
+  id       String @id @default(uuid())
+  username String @unique
+  email    String @unique
+  password String
+
+  role Role @default(STUDENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  isActive        Boolean   @default(true)
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+
+  // Relations
+  profile UserProfile?
+  setting UserSetting?
+
+  documents Document[]
+  comments  Comment[]
+  bookmarks Bookmark[]
+  ratings   Rating[]
+}
+
+model UserProfile {
+  id String @id @default(uuid())
+
+  firstName String?
+  lastName  String?
+
+  phoneNumber String?
+  address     String?
+  city        String?
+  country     String?
+
+  dateOfBirth DateTime?
+  gender      Gender?
+
+  avatarUrl String?
+  bio       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model UserSetting {
+  id String @id @default(uuid())
+
+  theme    Theme    @default(LIGHT)
+  language Language @default(EN)
+
+  emailNotificationsEnabled Boolean @default(true)
+  pushNotificationsEnabled  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents Document[]
+}
+
+model Document {
+  id String @id @default(uuid())
+
+  title       String
+  description String?
+
+  bookmarkCount Int @default(0)
+  downloadCount Int @default(0)
+
+  ratingSum     Int   @default(0)
+  ratingCount   Int   @default(0)
+  averageRating Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  files     File[]
+  comments  Comment[]
+  bookmarks Bookmark[]
+  ratings   Rating[]
+}
+
+model File {
+  id String @id @default(uuid())
+
+  name String
+  type String
+  size Int
+
+  objectKey String
+  url       String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id])
+}
+
+model Comment {
+  id String @id @default(uuid())
+
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id])
+
+  parentCommentId String?
+
+  parentComment Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id])
+  replies       Comment[] @relation("CommentReplies")
+}
+
+model Bookmark {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id])
+
+  @@unique([userId, documentId])
+}
+
+model Rating {
+  id String @id @default(uuid())
+
+  score Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id])
+
+  @@unique([userId, documentId])
+}

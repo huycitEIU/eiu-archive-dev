@@ -1,0 +1,22 @@
+@startuml EditCommentSequence
+  autonumber
+  actor "User" as user
+  participant "Client (App/Web)" as client
+  participant "Backend Server" as server
+  database "Database" as db
+
+    ' User chỉnh sửa bình luận tài liệu 
+    user -> client: Nhấn "Edit Comment"
+    activate client
+    client -> server: PUT /api/documents/comments/edit/{comment_id} (chứa nội dung bình luận mới)
+    activate server
+    server -> db: Cập nhật bình luận trong cơ sở dữ liệu (comment_id, nội dung bình luận mới)
+    activate db
+    db --> server: Cập nhật thành công, trả về kết quả
+    deactivate db
+    server --> client: Trả về kết quả thành công (200 OK)
+    client --> user: Hiển thị "Chỉnh sửa bình luận thành công"
+    deactivate server
+    deactivate client
+@enduml
+

@@ -1,0 +1,22 @@
+@startuml CommentDocumentSequence
+    autonumber
+    actor "User" as user
+    participant "Client (App/Web)" as client
+    participant "Backend Server" as server
+    database "Database" as db
+
+    ' User bình luận tài liệu
+    user -> client: Nhập bình luận & nhấn "Comment"
+    activate client
+    client -> server: POST /api/documents/comment/create/{document_id} (chứa nội dung bình luận)
+    activate server
+    server -> db: Lưu bình luận vào cơ sở dữ liệu (document_id, user_id, nội dung bình luận)
+    activate db
+    db --> server: Lưu thành công, trả về comment_id
+    deactivate db   
+    server --> client: Trả về kết quả thành công (201 Created) + comment_id
+    client --> user: Hiển thị "Bình luận thành công"
+    deactivate server
+    deactivate client
+    
+@enduml

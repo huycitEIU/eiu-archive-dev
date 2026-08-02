@@ -1,0 +1,21 @@
+@startuml DeleteCommentSequence
+    autonumber
+    actor "User" as user
+    participant "Client (App/Web)" as client
+    participant "Backend Server" as server
+    database "Database" as db
+
+    ' User xóa bình luận tài liệu
+    user -> client: Nhấn "Delete Comment"
+    activate client
+    client -> server: DELETE /api/documents/comment/delete/{comment_id}
+    activate server
+    server -> db: Xóa bình luận khỏi cơ sở dữ liệu (comment_id)
+    activate db
+    db --> server: Xóa thành công, trả về kết quả
+    deactivate db   
+    server --> client: Trả về kết quả thành công (200 OK)
+    client --> user: Hiển thị "Xóa bình luận thành công"
+    deactivate server
+    deactivate client
+@enduml

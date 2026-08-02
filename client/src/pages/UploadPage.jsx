@@ -45,7 +45,7 @@ const resGetCategories = await api.get(
 );
 
 const categories = resGetCategories.data.data.map((category) => ({
-  value: category.categoryId,
+  value: category.id,
   label: category.name,
 }));
 

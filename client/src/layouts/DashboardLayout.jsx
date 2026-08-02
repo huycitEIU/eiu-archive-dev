@@ -15,6 +15,7 @@ import {
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
+  CompassOutlined,
 } from "@ant-design/icons";
 
 import { Outlet, useNavigate } from "react-router-dom";
@@ -94,6 +95,11 @@ const Dashboard = () => {
           justifyContent: "space-between",
           backgroundColor: "var(--eiu-blue)",
           padding: "0 24px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -123,12 +129,19 @@ const Dashboard = () => {
         </div>
       </Header>
 
-      <Layout>
+      <Layout style={{ marginTop: 64 }}>
         {/* Left Panel (Tính năng) */}
         <Sider
           width={250}
           theme="light"
-          style={{ borderRight: "1px solid #f0f0f0" }}
+          style={{
+            borderRight: "1px solid #f0f0f0",
+            position: "fixed",
+            top: 64,
+            left: 0,
+            bottom: 0,
+            overflowY: "auto",
+          }}
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
@@ -147,11 +160,11 @@ const Dashboard = () => {
           <Content
             style={{
               padding: 24,
-              margin: 0,
+              marginLeft: collapsed ? 80 : 250, // Điều chỉnh khoảng cách khi menu bên trái thu gọn
               minHeight: 280,
               backgroundColor: "#ffffff",
               borderRadius: "8px",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
             <Outlet />

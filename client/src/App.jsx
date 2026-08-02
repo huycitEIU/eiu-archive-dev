@@ -3,12 +3,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
-import Overview from "./pages/Overview";
-import Documents from "./pages/Documents";
-import Upload from "./pages/UploadPage";
+import Dashboard from "./layouts/DashboardLayout";
+import Profile from "./pages/Profile/Profile";
+import Settings from "./pages/Profile/Settings";
+import Overview from "./pages/Dashboard/OverviewPage";
+import Documents from "./pages/Dashboard/DocumentsPage";
+import Upload from "./pages/Dashboard/UploadPage";
+import ExploreLayout from "./layouts/ExploreLayout";
+import ExplorePage from "./pages/Explore/ExplorePage";
 
 import { ConfigProvider, App as AntApp } from "antd";
 
@@ -20,6 +22,10 @@ function App() {
       <AntApp>
         <BrowserRouter>
           <Routes>
+            {/* Trang chính */}
+            <Route path="/" element={<ExploreLayout />}>
+              <Route path="explore" element={<ExplorePage />} />
+            </Route>
             {/* Trang đăng nhập */}
             <Route path="/login" element={<Login />} />
 

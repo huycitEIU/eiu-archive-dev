@@ -136,10 +136,7 @@ const UploadFile = () => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <Card
-        bordered={false}
-        style={{ borderRadius: "8px", maxWidth: "800px", margin: "0 auto" }}
-      >
+      <Card style={{ maxWidth: "800px", margin: "0 auto" }}>
         <Title
           level={3}
           style={{

@@ -18,6 +18,10 @@ entity Document {
     - ratingSum : int
     - ratingCount : int
     - averageRating : float
+
+    - year : int
+    - subjectCode : String
+    
 }
 
 entity User {

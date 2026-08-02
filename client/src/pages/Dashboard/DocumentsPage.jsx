@@ -96,13 +96,13 @@ const nomalizeDocuments = (data) => {
     key: index + 1,
     title: doc.title,
     category:
-      categories.data.data.find((cat) => cat.categoryId === doc.categoryId)
-        ?.name || "N/A",
+      categories.data.data.find((cat) => cat.id === doc.categoryId)?.name ||
+      "N/A",
     createdAt: new Date(doc.createdAt).toLocaleDateString(),
     description: doc.description,
-    stars: doc.starsCount,
+    bookmarkCount: doc.bookmarkCount,
     downloads: doc.downloadCount,
-    doucumentId: doc.documentId,
+    doucumentId: doc.id,
     userId: doc.userId,
     categoryId: doc.categoryId,
   }));
@@ -126,11 +126,11 @@ const Documents = () => {
     const documentDetails = {
       ...record,
       files: fileList.map((file) => ({
-        fileId: file.fileId,
-        fileName: file.fileName,
-        fileType: file.fileType,
-        fileSize: file.fileSize,
-        fileUrl: file.fileUrl,
+        id: file.id,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: file.url,
       })),
     };
 
@@ -257,8 +257,8 @@ const Documents = () => {
               <Descriptions.Item label="Số lượt tải xuống">
                 {selectedDocument.downloads}
               </Descriptions.Item>
-              <Descriptions.Item label="Số lượt đánh giá">
-                {selectedDocument.stars}
+              <Descriptions.Item label="Bookmark">
+                {selectedDocument.bookmarkCount}
               </Descriptions.Item>
             </Descriptions>
 
@@ -270,13 +270,13 @@ const Documents = () => {
               columns={[
                 {
                   title: "Tên file",
-                  dataIndex: "fileName",
-                  key: "fileName",
+                  dataIndex: "name",
+                  key: "name",
                 },
                 {
                   title: "Kích thước",
-                  dataIndex: "fileSize",
-                  key: "fileSize",
+                  dataIndex: "size",
+                  key: "size",
                   render: (text) => {
                     const sizeInKB = (text / 1024).toFixed(2);
                     if (sizeInKB < 1024) {

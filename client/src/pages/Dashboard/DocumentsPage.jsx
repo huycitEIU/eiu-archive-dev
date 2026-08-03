@@ -12,16 +12,10 @@ import {
   Descriptions,
 } from "antd";
 
-import {
-  FileOutlined,
-  CommentOutlined,
-  DownloadOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
-
-import axios from "axios";
+import { FileOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 
 import { downloadFile } from "../../services/downloadService";
+
 import {
   getDocumentsByUserId,
   getFilesByDocumentId,
@@ -116,23 +110,28 @@ const Documents = () => {
   }, []);
 
   const handleRowClick = async (record) => {
-    const fileList = await getFilesByDocumentId(record.documentId);
+    try {
+      const fileList = await getFilesByDocumentId(record.documentId);
 
-    const documentDetails = {
-      ...record,
-      files: fileList.map((file) => ({
-        key: file.id,
-        id: file.id,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        url: file.url,
-      })),
-    };
+      const documentDetails = {
+        ...record,
+        files: fileList.map((file) => ({
+          key: file.id,
+          id: file.id,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url: file.url,
+        })),
+      };
 
-    setSelectedDocument(documentDetails);
-    setIsDrawerVisible(true);
-    console.log("Selected document:", record);
+      setSelectedDocument(documentDetails);
+      setIsDrawerVisible(true);
+      console.log("Selected document:", record);
+    } catch (error) {
+      message.error("Đã xảy ra lỗi khi lấy thông tin chi tiết tài liệu.");
+      console.error("Error fetching document details:", error);
+    }
   };
 
   const closeDrawer = () => {
@@ -162,9 +161,9 @@ const Documents = () => {
       }
 
       const categories = await getCategories();
-      documents = normalizeDocuments(
-        await getDocumentsByUserId(userId),
-        categories,
+
+      setDocuments(
+        normalizeDocuments(await getDocumentsByUserId(userId), categories),
       );
 
       message.success("Danh sách tài liệu đã được làm mới.");
@@ -218,6 +217,7 @@ const Documents = () => {
         columns={columns}
         dataSource={filteredDocuments}
         rowKey="key"
+        loading={loading}
         onRow={(record) => ({
           onClick: () => handleRowClick(record), // Mở Drawer khi click vào một hàng
           style: { cursor: "pointer" }, // Thêm con trỏ chuột khi hover
@@ -232,7 +232,6 @@ const Documents = () => {
         placement="right"
         onClose={closeDrawer}
         open={isDrawerVisible}
-        visible={isDrawerVisible}
       >
         {/* Nội dung chung về tài liệu */}
         {selectedDocument ? (
@@ -312,7 +311,7 @@ const Documents = () => {
                         icon={<EyeOutlined />}
                         onClick={() => {
                           message.info(
-                            `Chức năng xem trước cho file ${record.fileName} sẽ được triển khai sau.`,
+                            `Chức năng xem trước cho file ${record.name} sẽ được triển khai sau.`,
                           );
                         }}
                       >

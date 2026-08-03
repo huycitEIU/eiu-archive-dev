@@ -74,4 +74,25 @@ const uploadDocument = async (documentId, files) => {
     }
 };
 
-export { getCategories, getDocumentList, getFilesByDocumentId, createDocument, uploadDocument };
+const getDocumentsByUserId = async (userId) => {
+    try {
+        const response = await axios.get(`http://localhost:3000/api/documents/${userId}/documents`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error(`Error fetching documents for user ID ${userId}:`, error);
+        throw error;
+    }
+};
+
+export {
+    getCategories,
+    getDocumentList,
+    getFilesByDocumentId,
+    createDocument,
+    uploadDocument,
+    getDocumentsByUserId
+};

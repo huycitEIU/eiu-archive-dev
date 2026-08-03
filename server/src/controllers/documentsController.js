@@ -139,6 +139,35 @@ const getDocumentList = async (req, res) => {
     }
 };
 
+const getDocumentsByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required parameter: userId.",
+            });
+        }
+
+        const documents = await prisma.document.findMany({
+            where: { userId },
+        });
+
+        res.status(200).json({
+            success: true,
+            data: documents,
+        });
+    } catch (error) {
+        console.error("Error fetching documents by userId:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching documents for the user.",
+            error: error.message,
+        });
+    }
+}
+
 const getDocumentCategories = async (req, res) => {
     try {
         const categories = await prisma.category.findMany();
@@ -231,6 +260,7 @@ export {
     createDocument,
     uploadDocument,
     getDocumentList,
+    getDocumentsByUserId,
     getDocumentCategories,
     getFilesByDocumentId,
     downloadFileById

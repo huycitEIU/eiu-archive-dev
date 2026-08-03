@@ -21,6 +21,13 @@ import {
 
 import axios from "axios";
 
+import { downloadFile } from "../../services/downloadService";
+import {
+  getDocumentList,
+  getFilesByDocumentId,
+  getCategories,
+} from "../../services/documentServices";
+
 const { Title, Text, Paragraph } = Typography;
 
 const columns = [
@@ -41,74 +48,29 @@ const columns = [
   },
 ];
 
-// Tạo một instance của axios với baseURL và interceptor để thêm token vào header
-const api = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
-
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-
-let categories = await api.get("/documents/categories");
-
-const getDocumentList = async () => {
-  try {
-    const res = await api.get("/documents/list");
-    if (res.data.success) {
-      return res.data.data;
-    } else {
-      console.error("Error fetching documents:", res.data.message);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching documents:", error);
-    return [];
-  }
-};
-
-const getFileList = async (documentId) => {
-  try {
-    const res = await api.get(`/documents/${documentId}/files`);
-    if (res.data.success) {
-      return res.data.data;
-    } else {
-      console.error("Error fetching files:", res.data.message);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching files:", error);
-    return [];
-  }
-};
-
-const nomalizeDocuments = (data) => {
-  return data.map((doc, index) => ({
-    key: index + 1,
+const normalizeDocuments = (documents, categories) => {
+  return documents.map((doc, index) => ({
+    key: doc.id,
     title: doc.title,
     category:
-      categories.data.data.find((cat) => cat.id === doc.categoryId)?.name ||
-      "N/A",
+      categories.find((cat) => cat.id === doc.categoryId)?.name || "N/A",
     createdAt: new Date(doc.createdAt).toLocaleDateString(),
     description: doc.description,
     bookmarkCount: doc.bookmarkCount,
     downloads: doc.downloadCount,
-    doucumentId: doc.id,
+    documentId: doc.id,
     userId: doc.userId,
     categoryId: doc.categoryId,
   }));
 };
 
-let documents = nomalizeDocuments(await getDocumentList());
+const handleDownloadFile = async (fileId) => {
+  try {
+    await downloadFile(fileId);
+  } catch (error) {
+    console.error("Error downloading file:", error);
+  }
+};
 
 const Documents = () => {
   const [searchText, setSearchText] = useState("");
@@ -120,12 +82,39 @@ const Documents = () => {
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
 
+  const [categories, setCategories] = useState([]);
+  let [documents, setDocuments] = useState([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const [categories, documentList] = await Promise.all([
+          getCategories(),
+          getDocumentList(),
+        ]);
+
+        setCategories(categories);
+        setDocuments(normalizeDocuments(documentList, categories));
+      } catch (error) {
+        message.error("Đã xảy ra lỗi khi lấy danh sách tài liệu.");
+        console.error("Error fetching documents:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleRowClick = async (record) => {
-    const fileList = await getFileList(record.doucumentId);
+    const fileList = await getFilesByDocumentId(record.documentId);
 
     const documentDetails = {
       ...record,
       files: fileList.map((file) => ({
+        key: file.id,
         id: file.id,
         name: file.name,
         type: file.type,
@@ -159,7 +148,7 @@ const Documents = () => {
     try {
       setLoading(true);
 
-      documents = nomalizeDocuments(await getDocumentList());
+      documents = normalizeDocuments(await getDocumentList(), categories);
 
       message.success("Danh sách tài liệu đã được làm mới.");
     } catch (error) {
@@ -187,8 +176,8 @@ const Documents = () => {
           onChange={(value) => setFilterType(value)}
           style={{ width: 200 }}
         >
-          {categories.data.data.map((category) => (
-            <Select.Option key={category.key} value={category.name}>
+          {categories.map((category) => (
+            <Select.Option key={category.id} value={category.name}>
               {category.name}
             </Select.Option>
           ))}
@@ -296,9 +285,7 @@ const Documents = () => {
                         type="link"
                         icon={<DownloadOutlined />}
                         onClick={() => {
-                          message.info(
-                            `Chức năng tải xuống cho file ${record.fileName} sẽ được triển khai sau.`,
-                          );
+                          handleDownloadFile(record.id);
                         }}
                       >
                         Tải xuống
@@ -319,7 +306,6 @@ const Documents = () => {
                 },
               ]}
               dataSource={selectedDocument.files || []}
-              rowKey="fileId"
               pagination={false}
             />
             <Divider />

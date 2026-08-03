@@ -15,39 +15,17 @@ import { App as AntdApp } from "antd";
 
 import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
 
+import {
+  getCategories,
+  createDocument,
+  uploadDocument,
+} from "../../services/documentServices";
+
 import axios from "axios";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { Dragger } = Upload;
-
-// create instance of axios with default baseURL
-const api = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
-
-// configure axios to include JWT token in headers for all requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-
-const resGetCategories = await api.get(
-  "http://localhost:3000/api/documents/categories",
-);
-
-const categories = resGetCategories.data.data.map((category) => ({
-  value: category.id,
-  label: category.name,
-}));
 
 const UploadFile = () => {
   const [form] = Form.useForm();
@@ -55,7 +33,23 @@ const UploadFile = () => {
   const [loading, setLoading] = useState(false);
   const { message } = AntdApp.useApp();
 
+  const [categories, setCategories] = useState([]);
+
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await getCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        message.error("Không thể tải danh mục, vui lòng thử lại!");
+      }
+    };
+
+    fetchCategories();
+  }, [message]);
+
   const handleUpload = async (values) => {
+    console.log("Form values:", values);
     if (fileList.length === 0) {
       message.error("Vui lòng chọn ít nhất một file!");
       return;
@@ -64,22 +58,23 @@ const UploadFile = () => {
     setLoading(true);
 
     try {
-      const resCreatedDocument = await api.post(
-        "http://localhost:3000/api/documents/create",
-        {
-          title: values.title,
-          description: values.description,
-          categoryId: values.category,
+      const documentData = {
+        title: values.title,
+        description: values.description,
+        categoryId: values.categoryId,
 
-          files: fileList.map((file) => ({
-            name: file.name,
-            size: file.size,
-            type: file.type,
-          })),
-        },
-      );
+        files: fileList.map((file) => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        })),
+      };
 
-      const presignedUrls = resCreatedDocument.data.data.presignedUrls;
+      const resCreatedDocument = await createDocument(documentData);
+      console.log("Document created:", resCreatedDocument.data);
+
+      const presignedUrls = resCreatedDocument.data.presignedUrls;
+      console.log("Presigned URLs:", presignedUrls);
 
       // use axios without jwt tokeb to upload files directly to S3 using the pre-signed URLs
       const resFromS3 = await Promise.all(
@@ -95,19 +90,20 @@ const UploadFile = () => {
       );
 
       // Save file metadata to the database after successful upload to S3
-      const documentId = resCreatedDocument.data.data.documentId;
-      const res = await api.post(`http://localhost:3000/api/documents/upload`, {
+      const documentId = resCreatedDocument.data.documentId;
+      console.log("Document ID:", documentId);
+      const res = await uploadDocument(
         documentId,
-        files: fileList.map((file, index) => ({
+        fileList.map((file, index) => ({
           name: file.name,
           size: file.size,
           type: file.type,
           url: presignedUrls[index].url.split("?")[0], // Remove query params from the URL
           objectKey: presignedUrls[index].objectKey, // Include the object key for reference
         })),
-      });
-
-      if (res.data.success) {
+      );
+      console.log("File metadata saved:", res);
+      if (res.success) {
         message.success("Tải lên thành công!");
         form.resetFields();
         setFileList([]);
@@ -181,13 +177,13 @@ const UploadFile = () => {
 
           <Form.Item
             label={<Text strong>Danh mục</Text>}
-            name="category"
+            name="categoryId"
             rules={[{ required: true, message: "Vui lòng chọn danh mục!" }]}
           >
             <Select size="large" placeholder="Chọn danh mục">
               {categories.map((category) => (
-                <Option key={category.value} value={category.value}>
-                  {category.label}
+                <Option key={category.id} value={category.id}>
+                  {category.name}
                 </Option>
               ))}
             </Select>

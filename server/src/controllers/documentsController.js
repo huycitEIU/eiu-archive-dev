@@ -1,6 +1,6 @@
 import express from "express";
 import prisma from "../config/prisma.js";
-import { generatePresignedUrl } from "../services/storageService.js";
+import { generateUploadPresignedUrl, generateDownloadPresignedUrl } from "../services/storageService.js";
 
 /**
  * This function handles the first step of the document upload process. 
@@ -16,6 +16,7 @@ import { generatePresignedUrl } from "../services/storageService.js";
 const createDocument = async (req, res) => {
     try {
         const { title, description, categoryId, files } = req.body;
+
         const userId = req.user.id;
 
         if (files.length === 0) {
@@ -40,7 +41,7 @@ const createDocument = async (req, res) => {
 
                 const uniqueFileName = `${Date.now()}-${file.name}`;
 
-                const presignedUrl = await generatePresignedUrl(uniqueFileName, file.type);
+                const presignedUrl = await generateUploadPresignedUrl(uniqueFileName, file.type);
                 return {
                     name: file.name,
                     url: presignedUrl,
@@ -70,7 +71,11 @@ const createDocument = async (req, res) => {
 
 const uploadDocument = async (req, res) => {
     try {
+        console.log("Received request to upload document files:", req.body);
         const { documentId, files } = req.body;
+
+        console.log("Received documentId:", documentId);
+        console.log("Received files:", files);
 
         if (!documentId || !files || files.length === 0) {
             return res.status(400).json({
@@ -94,6 +99,8 @@ const uploadDocument = async (req, res) => {
                 });
             })
         );
+
+        console.log(`Files for document ID ${documentId} have been successfully uploaded and metadata saved.`);
 
         res.status(200).json({
             success: true,
@@ -179,10 +186,52 @@ const getFilesByDocumentId = async (req, res) => {
     }
 };
 
+const downloadFileById = async (req, res) => {
+    try {
+        const { fileId } = req.params;
+
+        if (!fileId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required parameter: fileId.",
+            });
+        }
+
+        const file = await prisma.file.findUnique({
+            where: { id: fileId },
+        });
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+        }
+
+        // Here you would typically generate a pre-signed URL for the file download
+        const presignedUrl = await generateDownloadPresignedUrl(file.objectKey, file.name, file.type);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                url: presignedUrl,
+            },
+        });
+    } catch (error) {
+        console.error("Error generating download URL:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while generating the download URL.",
+            error: error.message,
+        });
+    }
+};
+
 export {
     createDocument,
     uploadDocument,
     getDocumentList,
     getDocumentCategories,
     getFilesByDocumentId,
+    downloadFileById
 };

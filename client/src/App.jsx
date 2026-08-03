@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-import Dashboard from "./layouts/DashboardLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import Profile from "./pages/Profile/Profile";
 import Settings from "./pages/Profile/Settings";
 import Overview from "./pages/Dashboard/OverviewPage";
@@ -33,7 +33,7 @@ function App() {
             <Route path="/register" element={<Register />} />
 
             {/* Trang Dashboard sau khi đăng nhập */}
-            <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
               <Route path="overview" element={<Overview />} />
               <Route path="upload" element={<Upload />} />
               <Route path="documents" element={<Documents />} />

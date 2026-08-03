@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message, Typography, Row, Col, ConfigProvider } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  message,
+  Typography,
+  Row,
+  Col,
+  ConfigProvider,
+} from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "../style/global.css"; // Import the CSS file for styling
@@ -21,7 +30,7 @@ const Register = () => {
 
       if (res.data.success) {
         message.success("Đăng ký thành công!");
-        navigate("/login"); 
+        navigate("/login");
       }
     } catch (error) {
       const errorMessage =
@@ -44,7 +53,9 @@ const Register = () => {
       <Row style={{ minHeight: "100vh" }}>
         {/* Left Panel - Brand */}
         <Col
-          xs={0} sm={0} md={12}
+          xs={0}
+          sm={0}
+          md={12}
           style={{
             backgroundColor: "var(--eiu-blue)",
             display: "flex",
@@ -58,7 +69,13 @@ const Register = () => {
             <Title style={{ color: "#ffffff", fontSize: "48px", margin: 0 }}>
               EIU Archive
             </Title>
-            <Text style={{ color: "var(--eiu-yellow)", fontSize: "20px", letterSpacing: "2px" }}>
+            <Text
+              style={{
+                color: "var(--eiu-yellow)",
+                fontSize: "20px",
+                letterSpacing: "2px",
+              }}
+            >
               Learn. Share. Inherit.
             </Text>
           </div>
@@ -66,7 +83,9 @@ const Register = () => {
 
         {/* Right Panel - Form */}
         <Col
-          xs={24} sm={24} md={12}
+          xs={24}
+          sm={24}
+          md={12}
           style={{
             display: "flex",
             justifyContent: "center",
@@ -75,15 +94,24 @@ const Register = () => {
           }}
         >
           <div style={{ width: "100%", maxWidth: "400px", padding: "20px" }}>
-            <Title level={2} style={{ color: "var(--eiu-blue)", textAlign: "center", marginBottom: "30px" }}>
+            <Title
+              level={2}
+              style={{
+                color: "var(--eiu-blue)",
+                textAlign: "center",
+                marginBottom: "30px",
+              }}
+            >
               SIGN UP
             </Title>
-            
+
             <Form layout="vertical" onFinish={onFinish}>
               <Form.Item
                 label={<span style={{ fontWeight: 500 }}>Username</span>}
                 name="username"
-                rules={[{ required: true, message: "Vui lòng nhập tên người dùng!" }]}
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên người dùng!" },
+                ]}
               >
                 <Input size="large" placeholder="Username" />
               </Form.Item>
@@ -93,7 +121,7 @@ const Register = () => {
                 name="email"
                 rules={[
                   { required: true, message: "Vui lòng nhập email!" },
-                  { type: "email", message: "Email không hợp lệ!" }
+                  { type: "email", message: "Email không hợp lệ!" },
                 ]}
               >
                 <Input size="large" placeholder="Email" />
@@ -119,11 +147,13 @@ const Register = () => {
                 </Button>
               </Form.Item>
             </Form>
-            
 
             <div style={{ textAlign: "center", marginTop: "20px" }}>
               <span>Already have an account? </span>
-              <Link to="/login" style={{ color: "var(--eiu-orange)", fontWeight: "bold" }}>
+              <Link
+                to="/login"
+                style={{ color: "var(--eiu-orange)", fontWeight: "bold" }}
+              >
                 Login
               </Link>
             </div>

@@ -1,3 +1,9 @@
+/* 
+TODO:
+- [ ] Implement the "View" functionality for files in the document details drawer.
+- [ ] Implement the "Download All" functionality for documents in the document details drawer.
+*/
+
 import React, { useState } from "react";
 import {
   Table,

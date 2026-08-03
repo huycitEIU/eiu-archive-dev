@@ -1,3 +1,9 @@
+/* 
+TODO:
+- [ ] Implement the "Edit Profile" functionality to allow users to update their personal information.
+- [ ] Implement the "Change Password" functionality to allow users to change their password securely.
+ */
+
 import React from "react";
 import {
   Row,

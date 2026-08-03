@@ -1,3 +1,13 @@
+/*
+TODO:
+- [ ] Implement file type validation in the upload component.
+- [ ] Add a progress bar to show upload progress for each file.
+- [ ] Implement a feature to remove files from the list before uploading.
+- [ ] Add a confirmation dialog before submitting the form.
+- [ ] Handle errors when a part of the upload fails and allow retrying.
+- [ ] Implement a feature to preview files before uploading.
+ */
+
 import React, { useState } from "react";
 import {
   Card,
@@ -9,9 +19,8 @@ import {
   Upload,
   message,
   Space,
+  App,
 } from "antd";
-
-import { App as AntdApp } from "antd";
 
 import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
 
@@ -31,7 +40,7 @@ const UploadFile = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { message } = AntdApp.useApp();
+  const { message } = App.useApp();
 
   const [categories, setCategories] = useState([]);
 
@@ -77,7 +86,7 @@ const UploadFile = () => {
       console.log("Presigned URLs:", presignedUrls);
 
       // use axios without jwt tokeb to upload files directly to S3 using the pre-signed URLs
-      const resFromS3 = await Promise.all(
+      await Promise.all(
         fileList.map((file, index) => {
           const presignedUrl = presignedUrls[index].url;
 
@@ -215,6 +224,7 @@ const UploadFile = () => {
                 icon={<UploadOutlined />}
                 size="large"
                 style={{ backgroundColor: "#144069" }}
+                loading={loading}
               >
                 Xác nhận tải lên
               </Button>

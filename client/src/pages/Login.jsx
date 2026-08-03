@@ -1,3 +1,8 @@
+/* 
+TODO:
+- [ ] Implement the "Forgot Password" functionality in the login page.
+ */
+
 import React, { useState } from "react";
 import {
   Form,

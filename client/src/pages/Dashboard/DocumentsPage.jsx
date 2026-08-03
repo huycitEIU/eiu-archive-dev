@@ -23,10 +23,12 @@ import axios from "axios";
 
 import { downloadFile } from "../../services/downloadService";
 import {
-  getDocumentList,
+  getDocumentsByUserId,
   getFilesByDocumentId,
   getCategories,
 } from "../../services/documentServices";
+
+import { getUserIdFromLocalStorage } from "../../utils/authUtils";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -90,9 +92,14 @@ const Documents = () => {
       try {
         setLoading(true);
 
+        const userId = getUserIdFromLocalStorage();
+        if (!userId) {
+          message.error("User ID not found. Please log in again.");
+          return;
+        }
         const [categories, documentList] = await Promise.all([
           getCategories(),
-          getDocumentList(),
+          getDocumentsByUserId(userId),
         ]);
 
         setCategories(categories);
@@ -148,7 +155,17 @@ const Documents = () => {
     try {
       setLoading(true);
 
-      documents = normalizeDocuments(await getDocumentList(), categories);
+      const userId = getUserIdFromLocalStorage();
+      if (!userId) {
+        message.error("User ID not found. Please log in again.");
+        return;
+      }
+
+      const categories = await getCategories();
+      documents = normalizeDocuments(
+        await getDocumentsByUserId(userId),
+        categories,
+      );
 
       message.success("Danh sách tài liệu đã được làm mới.");
     } catch (error) {

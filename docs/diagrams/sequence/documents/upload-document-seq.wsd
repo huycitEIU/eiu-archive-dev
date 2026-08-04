@@ -11,7 +11,7 @@
     'Đăng tải tài liệu lên theo mô hình Presigned URL
     user -> client: Chọn tệp & nhấn "Upload"
     activate client
-    client -> server: POST /api/documents/upload \n(chứa thông tin tài liệu)
+    client -> server: POST /api/documents/create \n(chứa thông tin tài liệu)
     activate server
     server -> fileStorage: Yêu cầu Presigned URL từ File Storage Server
     activate fileStorage
@@ -22,7 +22,7 @@
     activate fileStorage
     fileStorage --> client: Upload thành công
     deactivate fileStorage
-    client -> server: POST /api/documents/complete-upload \n(chứa thông tin tài liệu & đường dẫn tệp)
+    client -> server: POST /api/documents/upload \n(chứa thông tin tài liệu & đường dẫn tệp)
     activate server
     server -> db: Lưu thông tin tài liệu vào cơ sở dữ liệu
     activate db

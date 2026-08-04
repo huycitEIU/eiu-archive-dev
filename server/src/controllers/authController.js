@@ -75,8 +75,6 @@ const login = async (req, res) => {
             })
         }
 
-        console.log("User logged in:", user); // Log the user information for debugging
-
         // Tạo JWT Token
         const token = jwt.sign(
             {
@@ -100,6 +98,7 @@ const login = async (req, res) => {
             }
         });
     } catch (error) {
+        logger.error("Error during login:", error);
         res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi đăng nhập.',

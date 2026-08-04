@@ -1,6 +1,7 @@
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client from "../config/s3Client.js";
+import logger from "../utils/logger.js";
 
 /**
  * Generates a pre-signed URL for uploading a file to S3.
@@ -21,7 +22,7 @@ const generateUploadPresignedUrl = async (fileName, fileType) => {
         });
         return url;
     } catch (error) {
-        console.error("Error generating pre-signed URL:", error);
+        logger.error("Error generating pre-signed URL:", error);
         throw new Error("Could not generate pre-signed URL");
     }
 };
@@ -40,7 +41,7 @@ const generateDownloadPresignedUrl = async (fileKey, fileName, fileType) => {
         });
         return url;
     } catch (error) {
-        console.error("Error generating pre-signed URL:", error);
+        logger.error("Error generating pre-signed URL:", error);
         throw new Error("Could not generate pre-signed URL");
     }
 };

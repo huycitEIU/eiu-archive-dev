@@ -1,6 +1,10 @@
 import express from "express";
 import prisma from "../config/prisma.js";
 import { generateUploadPresignedUrl, generateDownloadPresignedUrl } from "../services/storageService.js";
+import { insertDocument } from "../repositories/documentRepository.js";
+import { insertFile } from "../repositories/fileRepository.js";
+
+import logger from "../utils/logger.js";
 
 /**
  * This function handles the first step of the document upload process. 
@@ -26,13 +30,11 @@ const createDocument = async (req, res) => {
             });
         }
 
-        const document = await prisma.document.create({
-            data: {
-                title,
-                description,
-                category: { connect: { id: categoryId } },
-                user: { connect: { id: userId } },
-            },
+        const document = await insertDocument({
+            title,
+            description,
+            categoryId,
+            userId
         });
 
         // Request a pre-signed URL from the storage service for each file (this part is not implemented here, but you would typically call your storage service's SDK or API to get the URLs)
@@ -60,7 +62,7 @@ const createDocument = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Error creating document:", error);
+        logger.error("Error creating document:", error);
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi tạo tài liệu.",
@@ -71,11 +73,7 @@ const createDocument = async (req, res) => {
 
 const uploadDocument = async (req, res) => {
     try {
-        console.log("Received request to upload document files:", req.body);
         const { documentId, files } = req.body;
-
-        console.log("Received documentId:", documentId);
-        console.log("Received files:", files);
 
         if (!documentId || !files || files.length === 0) {
             return res.status(400).json({
@@ -87,27 +85,16 @@ const uploadDocument = async (req, res) => {
         // Update the document record in the database with the uploaded file information
         await Promise.all(
             files.map(async (file) => {
-                return await prisma.file.create({
-                    data: {
-                        name: file.name,
-                        size: file.size,
-                        type: file.type,
-                        documentId: documentId,
-                        objectKey: file.objectKey, // Store the object key for reference
-                        url: file.url,
-                    },
-                });
+                return await insertFile(file, documentId);
             })
         );
-
-        console.log(`Files for document ID ${documentId} have been successfully uploaded and metadata saved.`);
 
         res.status(200).json({
             success: true,
             message: "Document upload completed successfully.",
         });
     } catch (error) {
-        console.error("Error completing document upload:", error);
+        logger.error("Error completing document upload:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while completing the document upload.",
@@ -130,7 +117,7 @@ const getDocumentList = async (req, res) => {
             data: documents,
         });
     } catch (error) {
-        console.error("Error fetching user documents:", error);
+        logger.error("Error fetching user documents:", error);
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi lấy danh sách tài liệu.",
@@ -159,7 +146,7 @@ const getDocumentsByUserId = async (req, res) => {
             data: documents,
         });
     } catch (error) {
-        console.error("Error fetching documents by userId:", error);
+        logger.error("Error fetching documents by userId:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while fetching documents for the user.",
@@ -177,7 +164,7 @@ const getDocumentCategories = async (req, res) => {
             data: categories,
         });
     } catch (error) {
-        console.error("Error fetching document categories:", error);
+        logger.error("Error fetching document categories:", error);
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi lấy danh sách danh mục tài liệu.",
@@ -206,7 +193,7 @@ const getFilesByDocumentId = async (req, res) => {
             data: files,
         });
     } catch (error) {
-        console.error("Error fetching files by documentId:", error);
+        logger.error("Error fetching files by documentId:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while fetching files for the document.",
@@ -247,7 +234,7 @@ const downloadFileById = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Error generating download URL:", error);
+        logger.error("Error generating download URL:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while generating the download URL.",

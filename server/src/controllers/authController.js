@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma.js";
 
+import logger from "../utils/logger.js";
+
 const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -41,12 +43,16 @@ const register = async (req, res) => {
                 email: newUser.email
             }
         });
+
+        logger.info({ id: newUser.id, username: newUser.username, email: newUser.email }, "New user registered successfully.");
     } catch (error) {
         res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi đăng ký tài khoản.',
             error: error.message
         });
+
+        logger.error(error, "Error during user registration.");
     }
 }
 
@@ -86,7 +92,6 @@ const login = async (req, res) => {
                 expiresIn: '1d'
             }
         );
-
         res.json({
             success: true,
             message: 'Đăng nhập thành công.',
@@ -97,6 +102,8 @@ const login = async (req, res) => {
                 role: user.role
             }
         });
+
+        logger.info({ id: user.id, username: user.username }, "User logged in successfully.");
     } catch (error) {
         logger.error("Error during login:", error);
         res.status(500).json({
@@ -104,6 +111,8 @@ const login = async (req, res) => {
             message: 'Đã xảy ra lỗi khi đăng nhập.',
             error: error.message
         });
+
+        logger.error(error, "Error during user login.");
     }
 };
 

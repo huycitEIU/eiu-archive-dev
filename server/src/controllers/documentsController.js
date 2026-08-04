@@ -18,7 +18,6 @@ import logger from "../utils/logger.js";
  * @param {express.Response} res 
  */
 const createDocument = async (req, res) => {
-    logger.info("===[createDocument]=== Request received to create a new document.");
     try {
         const { title, description, categoryId, files } = req.body;
         const userId = req.user.id;
@@ -61,19 +60,19 @@ const createDocument = async (req, res) => {
                 presignedUrls,
             },
         });
+
+        logger.info({ documentId: document.id, title, description, categoryId, userId }, "Document metadata stored and pre-signed URLs generated successfully.");
     } catch (error) {
-        logger.error("Error creating document:", error);
+        logger.error(error, "Error during document creation.");
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi tạo tài liệu.",
             error: error.message,
         });
     }
-    logger.info("===[createDocument]=== Request processing completed.");
 };
 
 const uploadDocument = async (req, res) => {
-    logger.info("===[uploadDocument]=== Request received to complete document upload.");
     try {
         const { documentId, files } = req.body;
 
@@ -95,23 +94,23 @@ const uploadDocument = async (req, res) => {
             success: true,
             message: "Document upload completed successfully.",
         });
+
+        logger.info({ documentId, files }, "Document upload completed successfully.");
     } catch (error) {
-        logger.error("Error completing document upload:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while completing the document upload.",
             error: error.message,
         });
+
+        logger.error(error, "Error during document upload.");
     }
-    logger.info("===[uploadDocument]=== Request processing completed.");
+
 };
 
 const getDocumentList = async (req, res) => {
-    logger.info("===[getDocumentList]=== Request received to fetch user documents.");
     try {
-
         const userId = req.user.userId;
-
         const documents = await prisma.document.findMany({
             where: { userId },
         });
@@ -128,11 +127,9 @@ const getDocumentList = async (req, res) => {
             error: error.message,
         });
     }
-    logger.info("===[getDocumentList]=== Request processing completed.");
 };
 
 const getDocumentsByUserId = async (req, res) => {
-
     try {
         const { userId } = req.params;
 
@@ -151,13 +148,16 @@ const getDocumentsByUserId = async (req, res) => {
             success: true,
             data: documents,
         });
+
+        logger.info({ userId, documentCount: documents.length }, "Fetched documents for user successfully.");
     } catch (error) {
-        logger.error("Error fetching documents by userId:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while fetching documents for the user.",
             error: error.message,
         });
+
+        logger.error(error, "Error during fetching documents by userId.");
     }
 }
 
@@ -169,13 +169,16 @@ const getDocumentCategories = async (req, res) => {
             success: true,
             data: categories,
         });
+
+        logger.info({ categoryCount: categories.length }, "Fetched document categories successfully.");
     } catch (error) {
-        logger.error("Error fetching document categories:", error);
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi lấy danh sách danh mục tài liệu.",
             error: error.message,
         });
+
+        logger.error(error, "Error during fetching document categories.");
     }
 };
 
@@ -198,13 +201,16 @@ const getFilesByDocumentId = async (req, res) => {
             success: true,
             data: files,
         });
+
+        logger.info({ documentId, fileCount: files.length }, "Fetched files for document successfully.");
     } catch (error) {
-        logger.error("Error fetching files by documentId:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while fetching files for the document.",
             error: error.message,
         });
+
+        logger.error(error, "Error during fetching files by documentId.");
     }
 };
 
@@ -239,13 +245,16 @@ const downloadFileById = async (req, res) => {
                 url: presignedUrl,
             },
         });
+
+        logger.info({ fileId, objectKey: file.objectKey }, "Generated download URL for file successfully.");
     } catch (error) {
-        logger.error("Error generating download URL:", error);
         res.status(500).json({
             success: false,
             message: "An error occurred while generating the download URL.",
             error: error.message,
         });
+
+        logger.error(error, "Error during generating download URL for file.");
     }
 };
 

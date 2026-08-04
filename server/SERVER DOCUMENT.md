@@ -1,16 +1,20 @@
 # Server Documentation
 
+## Target Architecture
+
 ## Overview
 
 This project is the backend of a **Document Storage and Sharing System**. It exposes RESTful APIs for user authentication, document management, file upload/download, and document sharing.
 
-The backend is developed using **Node.js** and **Express.js**, with **Prisma ORM** for database access and **Cloudflare R2** for object storage.
+The backend is built with **Node.js** and **Express.js**, uses **Prisma ORM** for database access, **MySQL** as the relational database, and **Cloudflare R2** for object storage.
+
+This document describes the **target architecture** the project should move toward. The current codebase may still contain logic in controllers while the project is being refactored.
 
 ---
 
-# Architecture
+## Architecture
 
-The backend follows a **Layered Architecture**, which is an API-oriented variation of the MVC (Model–View–Controller) architectural pattern.
+The backend follows a **layered architecture**, which is an API-oriented variation of the MVC (Model-View-Controller) pattern.
 
 Each layer has a single responsibility.
 
@@ -36,18 +40,18 @@ Repositories
 Prisma ORM
     │
     ▼
-PostgreSQL
-        +
-Cloudflare R2
+MySQL
+    │
+    └──────────────► Cloudflare R2
 ```
 
-## Layer Responsibilities
+### Layer Responsibilities
 
-### Routes
+#### Routes
 
 - Define API endpoints.
 - Map incoming HTTP requests to controllers.
-- Apply middleware when necessary.
+- Apply middleware when needed.
 
 Example:
 
@@ -58,9 +62,7 @@ POST /api/auth/login
 authController.login()
 ```
 
----
-
-### Middlewares
+#### Middlewares
 
 Middlewares process requests before they reach controllers.
 
@@ -73,9 +75,7 @@ Typical responsibilities include:
 - Error handling
 - Logging
 
----
-
-### Controllers
+#### Controllers
 
 Controllers handle HTTP requests and responses.
 
@@ -83,16 +83,14 @@ Responsibilities:
 
 - Read request parameters
 - Validate basic input
-- Call business services
+- Call services
 - Return HTTP responses
 
-Controllers **should not contain business logic or database queries**.
+Controllers should stay thin and avoid business logic.
 
----
+#### Services
 
-### Services
-
-Services contain the application's business logic.
+Services contain application business logic.
 
 Examples:
 
@@ -102,26 +100,32 @@ Examples:
 - Folder management
 - File processing
 
-Services coordinate repositories and external services.
+Services coordinate repositories and external adapters such as Cloudflare R2.
 
----
-
-### Repositories
+#### Repositories
 
 Repositories are responsible for data access.
 
 Responsibilities:
 
-- Query PostgreSQL through Prisma
+- Query MySQL through Prisma
 - Save document metadata
 - Retrieve user information
-- Communicate with Cloudflare R2 for file storage
+- Read and write domain records
 
 Repositories should not implement business rules.
 
----
+#### External Services / Adapters
 
-### Models
+For integrations that are not database access, keep them in dedicated services or adapters.
+
+Examples:
+
+- Cloudflare R2 upload/download helpers
+- Pre-signed URL generation
+- File storage operations
+
+#### Models
 
 Models represent the application's data structure.
 
@@ -136,9 +140,9 @@ Examples:
 
 ---
 
-# Request Flow
+## Request Flow
 
-## Example: Upload Document
+### Example: Upload Document
 
 ```
 Client
@@ -170,31 +174,43 @@ Document Repository
 ───────────────┬────────────────
                │
                ▼
-        MySQL
-      (metadata)
+             MySQL
+          (metadata)
 
                │
-
                ▼
-
         Cloudflare R2
-      (document file)
+        (file storage)
 ```
 
 Processing steps:
 
-1. Client uploads a file.
+1. Client sends an upload request.
 2. Route forwards the request.
 3. Authentication middleware verifies the user.
-4. Controller validates the request.
-5. Service checks permissions and business rules.
-6. Repository uploads the file to Cloudflare R2.
-7. Repository stores document metadata in PostgreSQL.
+4. Controller validates the request and extracts input.
+5. Service checks permissions and applies business rules.
+6. Repository stores document metadata in MySQL through Prisma.
+7. Storage adapter uploads the file to Cloudflare R2 or generates a pre-signed URL.
 8. Controller returns the response.
 
 ---
 
-# Project Structure
+## Current Codebase Notes
+
+This project is still early-stage, so some files may contain multiple responsibilities in one place.
+
+Current implementation patterns may include:
+
+- Controllers calling Prisma directly.
+- Storage helpers living inside service files.
+- Missing repository files for some features.
+
+That is acceptable during development, but the long-term goal is to move toward the layered structure above.
+
+---
+
+## Project Structure
 
 ```
 src/
@@ -206,10 +222,10 @@ src/
 │   └── Handle HTTP requests and responses
 │
 ├── services/
-│   └── Business logic
+│   └── Business logic and external integrations
 │
 ├── repositories/
-│   └── Database and storage access
+│   └── Database access
 │
 ├── middlewares/
 │   └── Authentication, validation, logging
@@ -221,13 +237,12 @@ src/
 │   └── Helper functions
 │
 ├── app.js
-│
 └── server.js
 ```
 
 ---
 
-# Design Principles
+## Design Principles
 
 The backend follows these principles:
 
@@ -239,7 +254,7 @@ The backend follows these principles:
 
 ---
 
-# Technologies
+## Technologies
 
 | Technology    | Purpose             |
 | ------------- | ------------------- |
@@ -254,17 +269,18 @@ The backend follows these principles:
 
 ---
 
-# Best Practices
+## Best Practices
 
 Controllers should:
 
 - Handle requests and responses only.
-- Never access the database directly.
+- Avoid direct database access.
 
 Services should:
 
 - Implement business logic.
 - Be reusable.
+- Coordinate repositories and storage adapters.
 
 Repositories should:
 
@@ -278,7 +294,19 @@ Middlewares should:
 
 ---
 
-# Future Improvements
+## Refactoring Plan
+
+When you move the code gradually, a practical order is:
+
+1. Move Prisma queries out of controllers into repositories.
+2. Keep controllers thin and only responsible for HTTP input/output.
+3. Move business rules into services.
+4. Keep Cloudflare R2 logic in a storage service or adapter.
+5. Add repository files feature by feature instead of refactoring everything at once.
+
+---
+
+## Future Improvements
 
 Possible future enhancements include:
 

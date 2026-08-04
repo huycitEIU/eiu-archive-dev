@@ -1,8 +1,6 @@
 import prisma from "../config/prisma.js";
 import logger from "../utils/logger.js";
 
-import logger from "../utils/logger.js";
-
 const insertDocument = async (doc) => {
     try {
 

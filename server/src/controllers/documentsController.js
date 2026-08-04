@@ -18,9 +18,9 @@ import logger from "../utils/logger.js";
  * @param {express.Response} res 
  */
 const createDocument = async (req, res) => {
+    logger.info("===[createDocument]=== Request received to create a new document.");
     try {
         const { title, description, categoryId, files } = req.body;
-
         const userId = req.user.id;
 
         if (files.length === 0) {
@@ -69,9 +69,11 @@ const createDocument = async (req, res) => {
             error: error.message,
         });
     }
+    logger.info("===[createDocument]=== Request processing completed.");
 };
 
 const uploadDocument = async (req, res) => {
+    logger.info("===[uploadDocument]=== Request received to complete document upload.");
     try {
         const { documentId, files } = req.body;
 
@@ -101,9 +103,11 @@ const uploadDocument = async (req, res) => {
             error: error.message,
         });
     }
+    logger.info("===[uploadDocument]=== Request processing completed.");
 };
 
 const getDocumentList = async (req, res) => {
+    logger.info("===[getDocumentList]=== Request received to fetch user documents.");
     try {
 
         const userId = req.user.userId;
@@ -124,9 +128,11 @@ const getDocumentList = async (req, res) => {
             error: error.message,
         });
     }
+    logger.info("===[getDocumentList]=== Request processing completed.");
 };
 
 const getDocumentsByUserId = async (req, res) => {
+
     try {
         const { userId } = req.params;
 

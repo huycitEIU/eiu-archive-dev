@@ -4,7 +4,14 @@ import prisma from "../config/prisma.js";
 
 import logger from "../utils/logger.js";
 
-const register = async (req, res) => {
+import type { Request, Response } from "express";
+import type { RegisterRequestBody, LoginRequestBody } from "../types/auth.js";
+import { JWT_SECRET } from "../config/env.js";
+
+export async function register(
+    req: Request<{}, {}, RegisterRequestBody>,
+    res: Response
+) {
     try {
         const { username, email, password } = req.body;
 
@@ -46,17 +53,22 @@ const register = async (req, res) => {
 
         logger.info({ id: newUser.id, username: newUser.username, email: newUser.email }, "New user registered successfully.");
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi đăng ký tài khoản.',
-            error: error.message
+            error: errorMessage
         });
 
         logger.error(error, "Error during user registration.");
     }
 }
 
-const login = async (req, res) => {
+export async function login(
+    req: Request<{}, {}, LoginRequestBody>,
+    res: Response
+) {
     try {
         const { username, password } = req.body;
 
@@ -82,12 +94,15 @@ const login = async (req, res) => {
         }
 
         // Tạo JWT Token
+
+        const payload = {
+            id: user.id,
+            username: user.username
+        };
+
         const token = jwt.sign(
-            {
-                id: user.id,
-                username: user.username
-            },
-            process.env.JWT_SECRET,
+            payload,
+            JWT_SECRET,
             {
                 expiresIn: '1d'
             }
@@ -105,16 +120,13 @@ const login = async (req, res) => {
 
         logger.info({ id: user.id, username: user.username }, "User logged in successfully.");
     } catch (error) {
-        logger.error("Error during login:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
         res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi đăng nhập.',
-            error: error.message
+            error: errorMessage
         });
 
         logger.error(error, "Error during user login.");
     }
 };
-
-
-export { register, login };

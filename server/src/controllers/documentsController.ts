@@ -1,10 +1,12 @@
-import express from "express";
+import { Request, Response } from "express";
 import prisma from "../config/prisma.js";
 import { generateUploadPresignedUrl, generateDownloadPresignedUrl } from "../services/storageService.js";
 import { insertDocument } from "../repositories/documentRepository.js";
 import { insertFile } from "../repositories/fileRepository.js";
 
 import logger from "../utils/logger.js";
+
+import type { CreateDocumentRequestBody, UploadDocumentRequestBody } from "../types/document.js";
 
 /**
  * This function handles the first step of the document upload process. 
@@ -17,10 +19,13 @@ import logger from "../utils/logger.js";
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
-const createDocument = async (req, res) => {
+export async function createDocument(
+    req: Request<{}, {}, CreateDocumentRequestBody>,
+    res: Response
+) {
     try {
         const { title, description, categoryId, files } = req.body;
-        const userId = req.user.id;
+        const userId = req.user!.id;
 
         if (files.length === 0) {
             return res.status(400).json({
@@ -63,16 +68,22 @@ const createDocument = async (req, res) => {
 
         logger.info({ documentId: document.id, title, description, categoryId, userId }, "Document metadata stored and pre-signed URLs generated successfully.");
     } catch (error) {
-        logger.error(error, "Error during document creation.");
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi tạo tài liệu.",
-            error: error.message,
+            error: errorMessage,
         });
+
+        logger.error(error, "Error during document creation.");
     }
 };
 
-const uploadDocument = async (req, res) => {
+export async function uploadDocument(
+    req: Request<{}, {}, UploadDocumentRequestBody>,
+    res: Response
+) {
     try {
         const { documentId, files } = req.body;
 
@@ -97,10 +108,12 @@ const uploadDocument = async (req, res) => {
 
         logger.info({ documentId, files }, "Document upload completed successfully.");
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: "An error occurred while completing the document upload.",
-            error: error.message,
+            error: errorMessage,
         });
 
         logger.error(error, "Error during document upload.");
@@ -108,9 +121,12 @@ const uploadDocument = async (req, res) => {
 
 };
 
-const getDocumentList = async (req, res) => {
+export async function getDocuments(
+    req: Request,
+    res: Response
+) {
     try {
-        const userId = req.user.userId;
+        const userId = req.user!.id;
         const documents = await prisma.document.findMany({
             where: { userId },
         });
@@ -120,16 +136,22 @@ const getDocumentList = async (req, res) => {
             data: documents,
         });
     } catch (error) {
-        logger.error("Error fetching user documents:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi lấy danh sách tài liệu.",
-            error: error.message,
+            error: errorMessage,
         });
+
+        logger.error(error, "Error fetching document list.");
     }
 };
 
-const getDocumentsByUserId = async (req, res) => {
+export async function getDocumentsByUserId(
+    req: Request<{ userId: string }>,
+    res: Response
+) {
     try {
         const { userId } = req.params;
 
@@ -151,17 +173,22 @@ const getDocumentsByUserId = async (req, res) => {
 
         logger.info({ userId, documentCount: documents.length }, "Fetched documents for user successfully.");
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: "An error occurred while fetching documents for the user.",
-            error: error.message,
+            error: errorMessage,
         });
 
         logger.error(error, "Error during fetching documents by userId.");
     }
 }
 
-const getDocumentCategories = async (req, res) => {
+export async function getDocumentCategories(
+    req: Request,
+    res: Response
+) {
     try {
         const categories = await prisma.category.findMany();
 
@@ -172,17 +199,22 @@ const getDocumentCategories = async (req, res) => {
 
         logger.info({ categoryCount: categories.length }, "Fetched document categories successfully.");
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: "Đã xảy ra lỗi khi lấy danh sách danh mục tài liệu.",
-            error: error.message,
+            error: errorMessage,
         });
 
         logger.error(error, "Error during fetching document categories.");
     }
 };
 
-const getFilesByDocumentId = async (req, res) => {
+export async function getFilesByDocumentId(
+    req: Request<{ documentId: string }>,
+    res: Response
+) {
     try {
         const { documentId } = req.params;
 
@@ -204,17 +236,22 @@ const getFilesByDocumentId = async (req, res) => {
 
         logger.info({ documentId, fileCount: files.length }, "Fetched files for document successfully.");
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         res.status(500).json({
             success: false,
             message: "An error occurred while fetching files for the document.",
-            error: error.message,
+            error: errorMessage,
         });
 
         logger.error(error, "Error during fetching files by documentId.");
     }
 };
 
-const downloadFileById = async (req, res) => {
+export async function downloadFileById(
+    req: Request<{ fileId: string }>,
+    res: Response
+) {
     try {
         const { fileId } = req.params;
 
@@ -248,22 +285,15 @@ const downloadFileById = async (req, res) => {
 
         logger.info({ fileId, objectKey: file.objectKey }, "Generated download URL for file successfully.");
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        
         res.status(500).json({
             success: false,
             message: "An error occurred while generating the download URL.",
-            error: error.message,
+            error: errorMessage,
         });
 
         logger.error(error, "Error during generating download URL for file.");
     }
 };
 
-export {
-    createDocument,
-    uploadDocument,
-    getDocumentList,
-    getDocumentsByUserId,
-    getDocumentCategories,
-    getFilesByDocumentId,
-    downloadFileById
-};

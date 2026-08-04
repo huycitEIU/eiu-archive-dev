@@ -1,7 +1,9 @@
 import prisma from "../config/prisma.js";
 import logger from "../utils/logger.js";
 
-const insertFile = async (file, documentId) => {
+import type { File, InsertFileData } from "../types/file.js";
+
+const insertFile = async (file: InsertFileData, documentId: string) => {
     try {
         const newFile = await prisma.file.create({
             data: {
@@ -11,12 +13,11 @@ const insertFile = async (file, documentId) => {
                 objectKey: file.objectKey,
                 url: file.url,
                 document: { connect: { id: documentId } },
-
             }
         });
         return newFile;
     } catch (error) {
-        logger.error("Error inserting file:", error);
+        logger.error(error, "Error inserting file:");
         throw new Error("An error occurred while inserting the file.");
     }
 }

@@ -1,7 +1,8 @@
 import prisma from "../config/prisma.js";
+import type { InsertDocumentData, UpdateDocumentData } from "../types/document.js";
 import logger from "../utils/logger.js";
 
-const insertDocument = async (doc) => {
+const insertDocument = async (doc: InsertDocumentData) => {
     try {
 
         const newDocument = await prisma.document.create({
@@ -15,7 +16,7 @@ const insertDocument = async (doc) => {
 
         return newDocument;
     } catch (error) {
-        logger.error("Error inserting document:", error);
+       logger.error(error, "Error inserting document:");
         throw new Error("An error occurred while inserting the document.");
     }
 }
@@ -32,7 +33,7 @@ const findAllDocuments = async () => {
     }
 }
 
-const findDocumentById = async (documentId) => {
+const findDocumentById = async (documentId: string) => {
     try {
         const document = await prisma.document.findUnique({
             where: { id: documentId },
@@ -51,7 +52,7 @@ const findDocumentById = async (documentId) => {
     }
 }
 
-const findDocumentsByUserId = async (userId) => {
+const findDocumentsByUserId = async (userId: string) => {
     try {
         const documents = await prisma.document.findMany({
             where: { userId },
@@ -77,7 +78,7 @@ const findDocumentCategories = async () => {
     }
 }
 
-const findFilesByDocumentId = async (documentId) => {
+const findFilesByDocumentId = async (documentId: string) => {
     try {
         const files = await prisma.file.findMany({
             where: { documentId },
@@ -91,7 +92,7 @@ const findFilesByDocumentId = async (documentId) => {
     }
 }
 
-const findFileById = async (fileId) => {
+const findFileById = async (fileId: string) => {
     try {
         const file = await prisma.file.findUnique({
             where: { id: fileId },
@@ -110,7 +111,7 @@ const findFileById = async (fileId) => {
     }
 }
 
-const updateDocument = async (documentId, updatedData) => {
+const updateDocument = async (documentId: string, updatedData: UpdateDocumentData) => {
     try {
         const updatedDocument = await prisma.document.update({
             where: { id: documentId },
@@ -130,7 +131,7 @@ const updateDocument = async (documentId, updatedData) => {
     }
 }
 
-const deleteDocumentById = async (documentId) => {
+const deleteDocumentById = async (documentId: string) => {
     try {
         const deletedDocument = await prisma.document.delete({
             where: { id: documentId },

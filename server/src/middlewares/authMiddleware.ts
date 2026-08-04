@@ -1,6 +1,13 @@
 import jwt from "jsonwebtoken";
+import type { Request, Response, NextFunction } from "express";
+import { JWT_SECRET } from "../config/env.js";
+import type { AuthTokenPayload } from "../types/auth.js";
 
-const authenticateToken = (req, res, next) => {
+export function authenticateToken(
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) {
     // Get the token from the request headers
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -11,12 +18,11 @@ const authenticateToken = (req, res, next) => {
 
     // Verify the token
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // Attach the decoded user information to the request object
+        const payload = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
+
+        req.user = payload; // Attach the payload to the request object for later use
         next(); // Proceed to the next middleware or route handler 
     } catch (err) {
         return res.status(403).json({ message: "Invalid token" });
     }
 };
-
-export { authenticateToken };

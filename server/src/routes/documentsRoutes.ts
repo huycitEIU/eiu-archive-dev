@@ -2,7 +2,7 @@ import express from "express";
 import {
     createDocument,
     uploadDocument,
-    getDocumentList,
+    getDocuments,
     getDocumentsByUserId,
     getDocumentCategories,
     getFilesByDocumentId,
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post('/create', authenticateToken, createDocument);
 router.post('/upload', authenticateToken, uploadDocument);
-router.get('/list', authenticateToken, getDocumentList);
+router.get('/list', authenticateToken, getDocuments);
 router.get('/:userId/documents', authenticateToken, getDocumentsByUserId);
 router.get('/categories', authenticateToken, getDocumentCategories);
 router.get('/:documentId/files', authenticateToken, getFilesByDocumentId);

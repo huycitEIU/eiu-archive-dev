@@ -13,7 +13,6 @@ import logger from "./utils/logger.js";
 import { logRequest } from "./middlewares/logger.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -27,11 +26,8 @@ app.get('/', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    logger.info(`Server is running on port ${PORT}`);
-})
-
 // Route Auth API
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentsRoutes);
 
+export default app;

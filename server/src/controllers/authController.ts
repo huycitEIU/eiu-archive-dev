@@ -15,6 +15,31 @@ export async function register(
     try {
         const { username, email, password } = req.body;
 
+        // Kiểm tra xem các trường bắt buộc có được cung cấp không
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui lòng điền đầy đủ thông tin.'
+            });
+        }
+
+        // Kiểm tra định dạng email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Định dạng email không hợp lệ.'
+            });
+        }
+
+        // Kiểm tra độ dài mật khẩu
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Mật khẩu phải có ít nhất 6 ký tự.'
+            });
+        }
+
         // Kiểm tra xem user tồn tại chưa
         const existingUser = await prisma.user.findFirst({
             where: {
@@ -43,7 +68,7 @@ export async function register(
 
         res.status(201).json({
             success: true,
-            message: 'Đăng ký thành công.',
+            message: 'User registered successfully.',
             data: {
                 id: newUser.id,
                 username: newUser.username,
@@ -57,7 +82,7 @@ export async function register(
 
         res.status(500).json({
             success: false,
-            message: 'Đã xảy ra lỗi khi đăng ký tài khoản.',
+            message: 'Error occurred during user registration.',
             error: errorMessage
         });
 
@@ -128,5 +153,71 @@ export async function login(
         });
 
         logger.error(error, "Error during user login.");
+    }
+};
+
+export async function logout(
+    req: Request,
+    res: Response
+) {
+    try {
+        // Xử lý đăng xuất (nếu cần)
+        res.json({
+            success: true,
+            message: 'Đăng xuất thành công.'
+        });
+
+        logger.info("User logged out successfully.");
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        res.status(500).json({
+            success: false,
+            message: 'Error occurred during user logout.',
+            error: errorMessage
+        });
+
+        logger.error(error, "Error during user logout.");
+    }
+};
+
+export async function deleteUser(
+    req: Request<{ userId: string }>,
+    res: Response
+) {
+    try {
+        const { userId } = req.params;
+
+        // Kiểm tra xem user có tồn tại không
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.'
+            });
+        }
+
+        // Xóa user theo userId
+        await prisma.user.delete({
+            where: { id: userId }
+        });
+
+        res.json({
+            success: true,
+            message: 'User deleted successfully.'
+        });
+
+        logger.info({ userId }, "User deleted successfully.");
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        res.status(500).json({
+            success: false,
+            message: 'Error occurred during user deletion.',
+            error: errorMessage
+        });
+
+        logger.error(error, "Error during user deletion.");
     }
 };

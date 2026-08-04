@@ -1,6 +1,8 @@
 import prisma from "../config/prisma.js";
 import logger from "../utils/logger.js";
 
+import logger from "../utils/logger.js";
+
 const insertDocument = async (doc) => {
     try {
 
@@ -20,6 +22,141 @@ const insertDocument = async (doc) => {
     }
 }
 
+const findAllDocuments = async () => {
+    try {
+        const documents = await prisma.document.findMany();
+
+        logger.info({ documentCount: documents.length }, "Fetched all documents successfully.");
+        return documents;
+    } catch (error) {
+        logger.error(error, "Error fetching all documents:");
+        throw new Error("An error occurred while fetching all documents.");
+    }
+}
+
+const findDocumentById = async (documentId) => {
+    try {
+        const document = await prisma.document.findUnique({
+            where: { id: documentId },
+        });
+
+        if (!document) {
+            logger.warn({ documentId }, "Document not found.");
+            throw new Error("Document not found.");
+        }
+
+        logger.info({ documentId }, "Fetched document by ID successfully.");
+        return document;
+    } catch (error) {
+        logger.error(error, "Error fetching document by ID:");
+        throw new Error("An error occurred while fetching the document by ID.");
+    }
+}
+
+const findDocumentsByUserId = async (userId) => {
+    try {
+        const documents = await prisma.document.findMany({
+            where: { userId },
+        });
+
+        logger.info({ userId, documentCount: documents.length }, "Fetched documents by user ID successfully.");
+        return documents;
+    } catch (error) {
+        logger.error(error, "Error fetching documents by user ID:");
+        throw new Error("An error occurred while fetching documents by user ID.");
+    }
+}
+
+const findDocumentCategories = async () => {
+    try {
+        const categories = await prisma.category.findMany();
+
+        logger.info({ categoryCount: categories.length }, "Fetched document categories successfully.");
+        return categories;
+    } catch (error) {
+        logger.error(error, "Error fetching document categories:");
+        throw new Error("An error occurred while fetching document categories.");
+    }
+}
+
+const findFilesByDocumentId = async (documentId) => {
+    try {
+        const files = await prisma.file.findMany({
+            where: { documentId },
+        });
+
+        logger.info({ documentId, fileCount: files.length }, "Fetched files by document ID successfully.");
+        return files;
+    } catch (error) {
+        logger.error(error, "Error fetching files by document ID:");
+        throw new Error("An error occurred while fetching files by document ID.");
+    }
+}
+
+const findFileById = async (fileId) => {
+    try {
+        const file = await prisma.file.findUnique({
+            where: { id: fileId },
+        });
+
+        if (!file) {
+            logger.warn({ fileId }, "File not found.");
+            throw new Error("File not found.");
+        }
+
+        logger.info({ fileId }, "Fetched file by ID successfully.");
+        return file;
+    } catch (error) {
+        logger.error(error, "Error fetching file by ID:");
+        throw new Error("An error occurred while fetching the file by ID.");
+    }
+}
+
+const updateDocument = async (documentId, updatedData) => {
+    try {
+        const updatedDocument = await prisma.document.update({
+            where: { id: documentId },
+            data: updatedData,
+        });
+
+        if (!updatedDocument) {
+            logger.warn({ documentId }, "Document not found for update.");
+            throw new Error("Document not found for update.");
+        }
+
+        logger.info({ documentId }, "Updated document successfully.");
+        return updatedDocument;
+    } catch (error) {
+        logger.error(error, "Error updating document:");
+        throw new Error("An error occurred while updating the document.");
+    }
+}
+
+const deleteDocumentById = async (documentId) => {
+    try {
+        const deletedDocument = await prisma.document.delete({
+            where: { id: documentId },
+        });
+
+        if (!deletedDocument) {
+            logger.warn({ documentId }, "Document not found for deletion.");
+            throw new Error("Document not found for deletion.");
+        }
+
+        logger.info({ documentId }, "Deleted document successfully.");
+        return deletedDocument;
+    } catch (error) {
+        logger.error(error, "Error deleting document:");
+        throw new Error("An error occurred while deleting the document.");
+    }
+}
+
 export {
-    insertDocument
+    insertDocument,
+    findAllDocuments,
+    findDocumentById,
+    findDocumentsByUserId,
+    findDocumentCategories,
+    findFilesByDocumentId,
+    findFileById
 };

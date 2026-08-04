@@ -76,41 +76,6 @@ const Profile = () => {
               <Tag color="green">{userData.status}</Tag>
             </Descriptions.Item>
           </Descriptions>
-
-          <Divider />
-
-          <Title level={5}>Hoạt động hệ thống</Title>
-          <Row gutter={[16, 16]} style={{ marginTop: "16px" }}>
-            <Col xs={24} sm={8}>
-              <Card bordered={false} style={{ background: "#f5f8fa" }}>
-                <Statistic
-                  title="Tài liệu đã tải lên"
-                  value={56}
-                  prefix={
-                    <CloudDownloadOutlined style={{ color: "#144069" }} />
-                  }
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card bordered={false} style={{ background: "#f5f8fa" }}>
-                <Statistic
-                  title="Dự án tham gia"
-                  value={12}
-                  prefix={<ProjectOutlined style={{ color: "#FFCC00" }} />}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card bordered={false} style={{ background: "#f5f8fa" }}>
-                <Statistic
-                  title="Bài viết"
-                  value={128}
-                  prefix={<FileTextOutlined style={{ color: "#1890ff" }} />}
-                />
-              </Card>
-            </Col>
-          </Row>
         </>
       ),
     },

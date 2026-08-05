@@ -56,13 +56,12 @@ export const authService = {
   },
 
   async deleteUser(userId: string) {
-    // Check if the user exists
     const user = await userRepository.findUserById(userId);
+
     if (!user) {
       throw new Error("User not found.");
     }
 
-    // Delete the user by userId
     await userRepository.deleteUserById(userId);
   },
 };

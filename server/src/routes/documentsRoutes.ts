@@ -1,22 +1,21 @@
 import express from "express";
 import {
-    createDocument,
-    uploadDocument,
-    getDocuments,
-    getDocumentsByUserId,
-    getDocumentCategories,
-    getFilesByDocumentId,
-    downloadFileById,
+  createDocument,
+  uploadDocument,
+  getDocuments,
+  getDocumentsByUserId,
+  getDocumentCategories,
+  getFilesByDocumentId,
+  downloadFileById,
 } from "../controllers/documentsController.js";
-import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post('/create', authenticateToken, createDocument);
-router.post('/upload', authenticateToken, uploadDocument);
-router.get('/list', authenticateToken, getDocuments);
-router.get('/:userId/documents', authenticateToken, getDocumentsByUserId);
-router.get('/categories', authenticateToken, getDocumentCategories);
-router.get('/:documentId/files', authenticateToken, getFilesByDocumentId);
-router.all('/:fileId/download', authenticateToken, downloadFileById);
+router.post("/create", createDocument);
+router.post("/upload", uploadDocument);
+router.get("/list", getDocuments);
+router.get("/:userId/documents", getDocumentsByUserId);
+router.get("/categories", getDocumentCategories);
+router.get("/:documentId/files", getFilesByDocumentId);
+router.all("/:fileId/download", downloadFileById);
 export default router;

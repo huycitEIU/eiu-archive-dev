@@ -1,299 +1,322 @@
 import { Request, Response } from "express";
 import prisma from "../config/prisma.js";
-import { generateUploadPresignedUrl, generateDownloadPresignedUrl } from "../services/storageService.js";
-import { insertDocument } from "../repositories/documentRepository.js";
+import {
+  generateUploadPresignedUrl,
+  generateDownloadPresignedUrl,
+} from "../services/storageService.js";
+import { documentRepository } from "../repositories/documentRepository.js";
 import { insertFile } from "../repositories/fileRepository.js";
 
 import logger from "../utils/logger.js";
 
-import type { CreateDocumentRequestBody, UploadDocumentRequestBody } from "../types/document.js";
+import type {
+  CreateDocumentRequestBody,
+  UploadDocumentRequestBody,
+} from "../types/document.js";
 
 /**
- * This function handles the first step of the document upload process. 
+ * This function handles the first step of the document upload process.
  * It receives the document metadata from the request, then it will:
  * 1. Validate the received metadata.
  * 2. Store the metadata in the database.
  * 3. Request a pre-signed URL from the storage service (e.g., AWS S3) for the actual file upload.
  * 4. Return the pre-signed URL to the client, which can then use it to upload the document's files directly to the storage service.
- * 
- * @param {express.Request} req 
- * @param {express.Response} res 
+ *
+ * @param {express.Request} req
+ * @param {express.Response} res
  */
 export async function createDocument(
-    req: Request<{}, {}, CreateDocumentRequestBody>,
-    res: Response
+  req: Request<{}, {}, CreateDocumentRequestBody>,
+  res: Response,
 ) {
-    try {
-        const { title, description, categoryId, files } = req.body;
-        const userId = req.user!.id;
+  try {
+    const { title, description, categoryId, files } = req.body;
+    const userId = req.user!.id;
 
-        if (files.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Vui lòng tải lên ít nhất một tệp.",
-            });
-        }
+    if (files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng tải lên ít nhất một tệp.",
+      });
+    }
 
-        const document = await insertDocument({
-            title,
-            description,
-            categoryId,
-            userId
-        });
+    const document = await documentRepository.insertDocument({
+      title,
+      description,
+      categoryId,
+      userId,
+    });
 
-        // Request a pre-signed URL from the storage service for each file (this part is not implemented here, but you would typically call your storage service's SDK or API to get the URLs)
-        const presignedUrls = await Promise.all(
-            files.map(async (file) => {
+    // Request a pre-signed URL from the storage service for each file (this part is not implemented here, but you would typically call your storage service's SDK or API to get the URLs)
+    const presignedUrls = await Promise.all(
+      files.map(async (file) => {
+        const uniqueFileName = `${Date.now()}-${file.name}`;
 
-                const uniqueFileName = `${Date.now()}-${file.name}`;
-
-                const presignedUrl = await generateUploadPresignedUrl(uniqueFileName, file.type);
-                return {
-                    name: file.name,
-                    url: presignedUrl,
-                    objectKey: uniqueFileName, // Store the unique file name for later reference
-                };
-            })
+        const presignedUrl = await generateUploadPresignedUrl(
+          uniqueFileName,
+          file.type,
         );
+        return {
+          name: file.name,
+          url: presignedUrl,
+          objectKey: uniqueFileName, // Store the unique file name for later reference
+        };
+      }),
+    );
 
-        // Return the pre-signed URLs to the client
-        res.status(200).json({
-            success: true,
-            message: "Document metadata stored successfully. Pre-signed URLs generated.",
-            data: {
-                documentId: document.id,
-                presignedUrls,
-            },
-        });
+    // Return the pre-signed URLs to the client
+    res.status(200).json({
+      success: true,
+      message:
+        "Document metadata stored successfully. Pre-signed URLs generated.",
+      data: {
+        documentId: document.id,
+        presignedUrls,
+      },
+    });
 
-        logger.info({ documentId: document.id, title, description, categoryId, userId }, "Document metadata stored and pre-signed URLs generated successfully.");
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.info(
+      { documentId: document.id, title, description, categoryId, userId },
+      "Document metadata stored and pre-signed URLs generated successfully.",
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
-        res.status(500).json({
-            success: false,
-            message: "Đã xảy ra lỗi khi tạo tài liệu.",
-            error: errorMessage,
-        });
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi tạo tài liệu.",
+      error: errorMessage,
+    });
 
-        logger.error(error, "Error during document creation.");
-    }
-};
-
-export async function uploadDocument(
-    req: Request<{}, {}, UploadDocumentRequestBody>,
-    res: Response
-) {
-    try {
-        const { documentId, files } = req.body;
-
-        if (!documentId || !files || files.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required parameters: documentId and files.",
-            });
-        }
-
-        // Update the document record in the database with the uploaded file information
-        await Promise.all(
-            files.map(async (file) => {
-                return await insertFile(file, documentId);
-            })
-        );
-
-        res.status(200).json({
-            success: true,
-            message: "Document upload completed successfully.",
-        });
-
-        logger.info({ documentId, files }, "Document upload completed successfully.");
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        res.status(500).json({
-            success: false,
-            message: "An error occurred while completing the document upload.",
-            error: errorMessage,
-        });
-
-        logger.error(error, "Error during document upload.");
-    }
-
-};
-
-export async function getDocuments(
-    req: Request,
-    res: Response
-) {
-    try {
-        const userId = req.user!.id;
-        const documents = await prisma.document.findMany({
-            where: { userId },
-        });
-
-        res.status(200).json({
-            success: true,
-            data: documents,
-        });
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        res.status(500).json({
-            success: false,
-            message: "Đã xảy ra lỗi khi lấy danh sách tài liệu.",
-            error: errorMessage,
-        });
-
-        logger.error(error, "Error fetching document list.");
-    }
-};
-
-export async function getDocumentsByUserId(
-    req: Request<{ userId: string }>,
-    res: Response
-) {
-    try {
-        const { userId } = req.params;
-
-        if (!userId) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required parameter: userId.",
-            });
-        }
-
-        const documents = await prisma.document.findMany({
-            where: { userId },
-        });
-
-        res.status(200).json({
-            success: true,
-            data: documents,
-        });
-
-        logger.info({ userId, documentCount: documents.length }, "Fetched documents for user successfully.");
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        res.status(500).json({
-            success: false,
-            message: "An error occurred while fetching documents for the user.",
-            error: errorMessage,
-        });
-
-        logger.error(error, "Error during fetching documents by userId.");
-    }
+    logger.error(error, "Error during document creation.");
+  }
 }
 
-export async function getDocumentCategories(
-    req: Request,
-    res: Response
+export async function uploadDocument(
+  req: Request<{}, {}, UploadDocumentRequestBody>,
+  res: Response,
 ) {
-    try {
-        const categories = await prisma.category.findMany();
+  try {
+    const { documentId, files } = req.body;
 
-        res.status(200).json({
-            success: true,
-            data: categories,
-        });
-
-        logger.info({ categoryCount: categories.length }, "Fetched document categories successfully.");
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        res.status(500).json({
-            success: false,
-            message: "Đã xảy ra lỗi khi lấy danh sách danh mục tài liệu.",
-            error: errorMessage,
-        });
-
-        logger.error(error, "Error during fetching document categories.");
+    if (!documentId || !files || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters: documentId and files.",
+      });
     }
-};
+
+    // Update the document record in the database with the uploaded file information
+    await Promise.all(
+      files.map(async (file) => {
+        return await insertFile(file, documentId);
+      }),
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Document upload completed successfully.",
+    });
+
+    logger.info(
+      { documentId, files },
+      "Document upload completed successfully.",
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while completing the document upload.",
+      error: errorMessage,
+    });
+
+    logger.error(error, "Error during document upload.");
+  }
+}
+
+export async function getDocuments(req: Request, res: Response) {
+  try {
+    const userId = req.user!.id;
+    const documents = await prisma.document.findMany({
+      where: { userId },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: documents,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi lấy danh sách tài liệu.",
+      error: errorMessage,
+    });
+
+    logger.error(error, "Error fetching document list.");
+  }
+}
+
+export async function getDocumentsByUserId(
+  req: Request<{ userId: string }>,
+  res: Response,
+) {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameter: userId.",
+      });
+    }
+
+    const documents = await prisma.document.findMany({
+      where: { userId },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: documents,
+    });
+
+    logger.info(
+      { userId, documentCount: documents.length },
+      "Fetched documents for user successfully.",
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching documents for the user.",
+      error: errorMessage,
+    });
+
+    logger.error(error, "Error during fetching documents by userId.");
+  }
+}
+
+export async function getDocumentCategories(req: Request, res: Response) {
+  try {
+    const categories = await prisma.category.findMany();
+
+    res.status(200).json({
+      success: true,
+      data: categories,
+    });
+
+    logger.info(
+      { categoryCount: categories.length },
+      "Fetched document categories successfully.",
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi khi lấy danh sách danh mục tài liệu.",
+      error: errorMessage,
+    });
+
+    logger.error(error, "Error during fetching document categories.");
+  }
+}
 
 export async function getFilesByDocumentId(
-    req: Request<{ documentId: string }>,
-    res: Response
+  req: Request<{ documentId: string }>,
+  res: Response,
 ) {
-    try {
-        const { documentId } = req.params;
+  try {
+    const { documentId } = req.params;
 
-        if (!documentId) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required parameter: documentId.",
-            });
-        }
-
-        const files = await prisma.file.findMany({
-            where: { documentId },
-        });
-
-        res.status(200).json({
-            success: true,
-            data: files,
-        });
-
-        logger.info({ documentId, fileCount: files.length }, "Fetched files for document successfully.");
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        res.status(500).json({
-            success: false,
-            message: "An error occurred while fetching files for the document.",
-            error: errorMessage,
-        });
-
-        logger.error(error, "Error during fetching files by documentId.");
+    if (!documentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameter: documentId.",
+      });
     }
-};
+
+    const files = await prisma.file.findMany({
+      where: { documentId },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: files,
+    });
+
+    logger.info(
+      { documentId, fileCount: files.length },
+      "Fetched files for document successfully.",
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching files for the document.",
+      error: errorMessage,
+    });
+
+    logger.error(error, "Error during fetching files by documentId.");
+  }
+}
 
 export async function downloadFileById(
-    req: Request<{ fileId: string }>,
-    res: Response
+  req: Request<{ fileId: string }>,
+  res: Response,
 ) {
-    try {
-        const { fileId } = req.params;
+  try {
+    const { fileId } = req.params;
 
-        if (!fileId) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required parameter: fileId.",
-            });
-        }
-
-        const file = await prisma.file.findUnique({
-            where: { id: fileId },
-        });
-
-        if (!file) {
-            return res.status(404).json({
-                success: false,
-                message: "File not found.",
-            });
-        }
-
-        // Here you would typically generate a pre-signed URL for the file download
-        const presignedUrl = await generateDownloadPresignedUrl(file.objectKey, file.name, file.type);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                url: presignedUrl,
-            },
-        });
-
-        logger.info({ fileId, objectKey: file.objectKey }, "Generated download URL for file successfully.");
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        
-        res.status(500).json({
-            success: false,
-            message: "An error occurred while generating the download URL.",
-            error: errorMessage,
-        });
-
-        logger.error(error, "Error during generating download URL for file.");
+    if (!fileId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameter: fileId.",
+      });
     }
-};
 
+    const file = await prisma.file.findUnique({
+      where: { id: fileId },
+    });
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found.",
+      });
+    }
+
+    // Here you would typically generate a pre-signed URL for the file download
+    const presignedUrl = await generateDownloadPresignedUrl(
+      file.objectKey,
+      file.name,
+      file.type,
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        url: presignedUrl,
+      },
+    });
+
+    logger.info(
+      { fileId, objectKey: file.objectKey },
+      "Generated download URL for file successfully.",
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while generating the download URL.",
+      error: errorMessage,
+    });
+
+    logger.error(error, "Error during generating download URL for file.");
+  }
+}

@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import prisma from "../config/prisma.js";
 
 import logger from "../utils/logger.js";
 
@@ -9,59 +8,14 @@ import type { RegisterRequestBody, LoginRequestBody } from "../types/auth.js";
 import { JWT_SECRET } from "../config/env.js";
 
 import { userRepository } from "../repositories/userRepository.js";
+import { authService } from "../services/authService.js";
 
 export async function register(
   req: Request<{}, {}, RegisterRequestBody>,
   res: Response,
 ) {
   try {
-    const { username, email, password } = req.body;
-
-    // Kiểm tra xem các trường bắt buộc có được cung cấp không
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Missing required fields: username, email, and password are required.",
-      });
-    }
-
-    // Kiểm tra định dạng email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email format.",
-      });
-    }
-
-    // Kiểm tra độ dài mật khẩu
-    if (password.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 6 characters long.",
-      });
-    }
-
-    // Kiểm tra xem user tồn tại chưa
-    const existingUser = await userRepository.findUserByUsername(username);
-
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "Account already exists. Please choose a different username.",
-      });
-    }
-
-    // Mã hoá mật khẩu
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Tạo user mới
-    const newUser = await userRepository.createUser(
-      username,
-      email,
-      hashedPassword,
-    );
+    const newUser = await authService.registerUser(req.body);
 
     res.status(201).json({
       success: true,

@@ -85,7 +85,7 @@ export async function createDocument(
 
     res.status(500).json({
       success: false,
-      message: "Đã xảy ra lỗi khi tạo tài liệu.",
+      message: "Error occurred during document creation.",
       error: errorMessage,
     });
 

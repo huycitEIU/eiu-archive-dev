@@ -8,6 +8,8 @@ import type { Request, Response } from "express";
 import type { RegisterRequestBody, LoginRequestBody } from "../types/auth.js";
 import { JWT_SECRET } from "../config/env.js";
 
+import { userRepository } from "../repositories/userRepository.js";
+
 export async function register(
   req: Request<{}, {}, RegisterRequestBody>,
   res: Response,
@@ -19,7 +21,8 @@ export async function register(
     if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Vui lòng điền đầy đủ thông tin.",
+        message:
+          "Missing required fields: username, email, and password are required.",
       });
     }
 
@@ -28,7 +31,7 @@ export async function register(
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: "Định dạng email không hợp lệ.",
+        message: "Invalid email format.",
       });
     }
 
@@ -36,21 +39,17 @@ export async function register(
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message: "Mật khẩu phải có ít nhất 6 ký tự.",
+        message: "Password must be at least 6 characters long.",
       });
     }
 
     // Kiểm tra xem user tồn tại chưa
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { username }],
-      },
-    });
+    const existingUser = await userRepository.findUserByUsername(username);
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Tài khoản đã tồn tại.",
+        message: "Account already exists. Please choose a different username.",
       });
     }
 
@@ -58,13 +57,11 @@ export async function register(
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Tạo user mới
-    const newUser = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
+    const newUser = await userRepository.createUser(
+      username,
+      email,
+      hashedPassword,
+    );
 
     res.status(201).json({
       success: true,
@@ -101,14 +98,12 @@ export async function login(
     const { username, password } = req.body;
 
     // Tìm user theo username
-    const user = await prisma.user.findUnique({
-      where: { username },
-    });
+    const user = await userRepository.findUserByUsername(username);
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: "Tài khoản không tồn tại.",
+        message: "Account does not exist.",
       });
     }
 
@@ -117,7 +112,7 @@ export async function login(
     if (!isMatch) {
       return res.status(400).json({
         success: false,
-        message: "Mật khẩu không đúng.",
+        message: "Wrong password.",
       });
     }
 
@@ -134,7 +129,7 @@ export async function login(
 
     res.json({
       success: true,
-      message: "Đăng nhập thành công.",
+      message: "Login successful.",
       token,
       user: {
         id: user.id,
@@ -151,7 +146,7 @@ export async function login(
     const errorMessage = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
-      message: "Đã xảy ra lỗi khi đăng nhập.",
+      message: "Error occurred during user login.",
       error: errorMessage,
     });
 
@@ -164,7 +159,7 @@ export async function logout(req: Request, res: Response) {
     // Xử lý đăng xuất (nếu cần)
     res.json({
       success: true,
-      message: "Đăng xuất thành công.",
+      message: "Logout successful.",
     });
 
     logger.info("User logged out successfully.");
@@ -188,9 +183,7 @@ export async function deleteUser(
     const { userId } = req.params;
 
     // Kiểm tra xem user có tồn tại không
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await userRepository.findUserById(userId);
 
     if (!user) {
       return res.status(404).json({
@@ -200,9 +193,7 @@ export async function deleteUser(
     }
 
     // Xóa user theo userId
-    await prisma.user.delete({
-      where: { id: userId },
-    });
+    await userRepository.deleteUserById(userId);
 
     res.json({
       success: true,

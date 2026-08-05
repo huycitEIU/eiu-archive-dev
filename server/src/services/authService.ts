@@ -1,8 +1,6 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/env.js";
-
 import { userRepository } from "../repositories/userRepository.js";
+import { generateToken } from "../utils/jwt.js";
+import { bcryptUtils } from "../utils/bcrypt.js";
 
 export const authService = {
   async registerUser(userData: {
@@ -12,47 +10,42 @@ export const authService = {
   }) {
     const { username, email, password } = userData;
 
-    // Check if the user already exists
     const existingUser = await userRepository.findUserByUsername(username);
+
     if (existingUser) {
       throw new Error("Username already exists.");
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcryptUtils.hashPassword(password);
 
-    // Create a new user
     const newUser = await userRepository.createUser(
       username,
       email,
       hashedPassword,
     );
+
     return newUser;
   },
 
   async loginUser(userData: { username: string; password: string }) {
     const { username, password } = userData;
 
-    // Find the user by username
     const user = await userRepository.findUserByUsername(username);
+
     if (!user) {
       throw new Error("Invalid username or password.");
     }
 
-    // Compare the provided password with the stored hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcryptUtils.comparePasswords(
+      password,
+      user.password,
+    );
+
     if (!isPasswordValid) {
       throw new Error("Invalid username or password.");
     }
 
-    // Generate a JWT token
-    const token = jwt.sign(
-      { id: user.id, username: user.username },
-      JWT_SECRET,
-      {
-        expiresIn: "1h",
-      },
-    );
+    const token = generateToken({ id: user.id, username: user.username });
 
     return { token, user };
   },

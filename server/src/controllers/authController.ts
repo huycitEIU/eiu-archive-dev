@@ -3,44 +3,30 @@ import jwt from "jsonwebtoken";
 
 import logger from "../utils/logger.js";
 
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import type { RegisterRequestBody, LoginRequestBody } from "../types/auth.js";
 import { JWT_SECRET } from "../config/env.js";
 
 import { userRepository } from "../repositories/userRepository.js";
 import { authService } from "../services/authService.js";
+import { HTTP_STATUS } from "../constants/httpStatus.js";
+
+import { ValidationError } from "../errors/ValidationError.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 
 export async function register(
   req: Request<{}, {}, RegisterRequestBody>,
   res: Response,
+  next: NextFunction,
 ) {
   try {
-    const newUser = await authService.registerUser(req.body);
+    const result = await authService.registerUser(req.body);
 
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully.",
-      data: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-      },
-    });
+    res.status(HTTP_STATUS.OK).json(result);
 
-    logger.info(
-      { id: newUser.id, username: newUser.username, email: newUser.email },
-      "New user registered successfully.",
-    );
+    logger.info(result, "Registration successful.");
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Error occurred during user registration.",
-      error: errorMessage,
-    });
-
-    logger.error(error, "Error during user registration.");
+    next(error); // Pass the error to the error handling middleware
   }
 }
 

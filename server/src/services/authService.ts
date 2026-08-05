@@ -2,6 +2,10 @@ import { userRepository } from "../repositories/userRepository.js";
 import { generateToken } from "../utils/jwt.js";
 import { bcryptUtils } from "../utils/bcrypt.js";
 
+import { ConflictError } from "../errors/ConflictError.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
+import { ValidationError } from "../errors/ValidationError.js";
+
 export const authService = {
   async registerUser(userData: {
     username: string;
@@ -13,7 +17,7 @@ export const authService = {
     const existingUser = await userRepository.findUserByUsername(username);
 
     if (existingUser) {
-      throw new Error("Username already exists.");
+      throw new ConflictError("Username already exists.");
     }
 
     const hashedPassword = await bcryptUtils.hashPassword(password);
@@ -33,7 +37,7 @@ export const authService = {
     const user = await userRepository.findUserByUsername(username);
 
     if (!user) {
-      throw new Error("Invalid username or password.");
+      throw new NotFoundError("User not found.");
     }
 
     const isPasswordValid = await bcryptUtils.comparePasswords(
@@ -42,7 +46,7 @@ export const authService = {
     );
 
     if (!isPasswordValid) {
-      throw new Error("Invalid username or password.");
+      throw new ValidationError("Invalid password.");
     }
 
     const token = generateToken({ id: user.id, username: user.username });

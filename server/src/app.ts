@@ -8,24 +8,25 @@ import documentsRoutes from "./routes/documentsRoutes.js";
 
 import logger from "./utils/logger.js";
 import { logRequest } from "./middlewares/logger.js";
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 app.use(logRequest);
 
-// Routes test
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "EIU Archive API is running",
-  });
-});
-
-// Route Auth API
+// Public routes
 app.use(healthRoutes);
 app.use("/api/auth", authRoutes);
+
+app.use(authMiddleware); // Apply authentication middleware to all routes below
+
+// Protected routes
 app.use("/api/documents", documentsRoutes);
+
+app.use(errorMiddleware); // Error handling middleware
 
 export default app;

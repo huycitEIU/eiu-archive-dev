@@ -4,8 +4,9 @@ import {
   generateUploadPresignedUrl,
   generateDownloadPresignedUrl,
 } from "../services/storageService.js";
+
 import { documentRepository } from "../repositories/documentRepository.js";
-import { insertFile } from "../repositories/fileRepository.js";
+import { fileRepository } from "../repositories/fileRepository.js";
 
 import logger from "../utils/logger.js";
 
@@ -109,7 +110,7 @@ export async function uploadDocument(
     // Update the document record in the database with the uploaded file information
     await Promise.all(
       files.map(async (file) => {
-        return await insertFile(file, documentId);
+        return await fileRepository.insertFile(file, documentId);
       }),
     );
 

@@ -14,6 +14,11 @@ export const authService = {
   }) {
     const { username, email, password } = userData;
 
+    // Check required fields
+    if (!username || !email || !password) {
+      throw new ValidationError("Missing required fields.");
+    }
+
     const existingUser = await userRepository.findUserByUsername(username);
 
     if (existingUser) {
@@ -33,6 +38,11 @@ export const authService = {
 
   async loginUser(userData: { username: string; password: string }) {
     const { username, password } = userData;
+
+    // Check required fields
+    if (!username || !password) {
+      throw new ValidationError("Missing required fields.");
+    }
 
     const user = await userRepository.findUserByUsername(username);
 

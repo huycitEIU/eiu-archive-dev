@@ -53,8 +53,8 @@ const Register = () => {
       <Row style={{ minHeight: "100vh" }}>
         {/* Left Panel - Brand */}
         <Col
-          xs={0}
-          sm={0}
+          xs={24}
+          sm={24}
           md={12}
           style={{
             backgroundColor: "var(--eiu-blue)",

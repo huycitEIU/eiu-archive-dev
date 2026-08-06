@@ -1,18 +1,11 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
 import logger from "../utils/logger.js";
 
 import type { Request, Response, NextFunction } from "express";
 import type { RegisterRequestBody, LoginRequestBody } from "../types/auth.js";
-import { JWT_SECRET } from "../config/env.js";
 
 import { userRepository } from "../repositories/userRepository.js";
 import { authService } from "../services/authService.js";
 import { HTTP_STATUS } from "../constants/httpStatus.js";
-
-import { ValidationError } from "../errors/ValidationError.js";
-import { NotFoundError } from "../errors/NotFoundError.js";
 
 export async function register(
   req: Request<{}, {}, RegisterRequestBody>,
@@ -20,98 +13,44 @@ export async function register(
   next: NextFunction,
 ) {
   try {
-    const result = await authService.registerUser(req.body);
+    await authService.registerUser(req.body);
 
-    res.status(HTTP_STATUS.OK).json(result);
-
-    logger.info(result, "Registration successful.");
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: "Registration successful.",
+    });
   } catch (error) {
-    next(error); // Pass the error to the error handling middleware
+    next(error);
   }
 }
 
 export async function login(
   req: Request<{}, {}, LoginRequestBody>,
   res: Response,
+  next: NextFunction,
 ) {
   try {
-    const { username, password } = req.body;
+    const result = await authService.loginUser(req.body);
 
-    // Tìm user theo username
-    const user = await userRepository.findUserByUsername(username);
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Account does not exist.",
-      });
-    }
-
-    // So sánh mật khẩu
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: "Wrong password.",
-      });
-    }
-
-    // Tạo JWT Token
-
-    const payload = {
-      id: user.id,
-      username: user.username,
-    };
-
-    const token = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: "1d",
-    });
-
-    res.json({
+    res.status(HTTP_STATUS.OK).json({
       success: true,
       message: "Login successful.",
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      },
+      token: result.token,
     });
-
-    logger.info(
-      { id: user.id, username: user.username },
-      "User logged in successfully.",
-    );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    res.status(500).json({
-      success: false,
-      message: "Error occurred during user login.",
-      error: errorMessage,
-    });
-
-    logger.error(error, "Error during user login.");
+    next(error);
   }
 }
 
-export async function logout(req: Request, res: Response) {
+export async function logout(req: Request, res: Response, next: NextFunction) {
   try {
     // Xử lý đăng xuất (nếu cần)
     res.json({
       success: true,
       message: "Logout successful.",
     });
-
-    logger.info("User logged out successfully.");
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    res.status(500).json({
-      success: false,
-      message: "Error occurred during user logout.",
-      error: errorMessage,
-    });
-
-    logger.error(error, "Error during user logout.");
+    next(error); // Pass the error to the error handling middleware
   }
 }
 
@@ -139,8 +78,6 @@ export async function deleteUser(
       success: true,
       message: "User deleted successfully.",
     });
-
-    logger.info({ userId }, "User deleted successfully.");
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     res.status(500).json({
@@ -148,7 +85,5 @@ export async function deleteUser(
       message: "Error occurred during user deletion.",
       error: errorMessage,
     });
-
-    logger.error(error, "Error during user deletion.");
   }
 }

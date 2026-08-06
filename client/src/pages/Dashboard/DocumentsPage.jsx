@@ -23,7 +23,7 @@ import { FileOutlined, DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 import { downloadFile } from "../../services/downloadService";
 
 import {
-  getDocumentsByUserId,
+  getDocumentList,
   getFilesByDocumentId,
   getCategories,
 } from "../../services/documentServices";
@@ -92,14 +92,9 @@ const Documents = () => {
       try {
         setLoading(true);
 
-        const userId = getUserIdFromLocalStorage();
-        if (!userId) {
-          message.error("User ID not found. Please log in again.");
-          return;
-        }
         const [categories, documentList] = await Promise.all([
           getCategories(),
-          getDocumentsByUserId(userId),
+          getDocumentList(),
         ]);
 
         setCategories(categories);

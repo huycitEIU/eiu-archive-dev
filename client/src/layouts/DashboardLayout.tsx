@@ -171,10 +171,19 @@ const DashboardLayout: React.FC = () => {
             style={{
               margin: "24px 16px 0",
               overflow: "auto",
+              borderRadius: borderRadiusLG,
+              background: colorBgContainer,
             }}
           >
             <Outlet></Outlet>
-            <Footer style={{ textAlign: "center" }}>
+            <Footer
+              style={{
+                textAlign: "center",
+                marginTop: "16px",
+                background: colorBgContainer,
+                borderRadius: borderRadiusLG,
+              }}
+            >
               EIU Archive ©{currentYear}
             </Footer>
           </Content>

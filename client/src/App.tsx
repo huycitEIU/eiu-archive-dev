@@ -3,6 +3,7 @@ import "./App.css";
 import { App as AntApp, ConfigProvider, theme } from "antd";
 
 import LoginPage from "./pages/LoginPage";
+import UploadPage from "./pages/Dashboard/UploadPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
@@ -109,7 +110,9 @@ function App() {
           <Routes>
             {/* Home page */}
             <Route path="/" element={<LoginPage />}></Route>
-            <Route path="/dashboard" element={<DashboardLayout />}></Route>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route path="upload" element={<UploadPage />}></Route>
+            </Route>
           </Routes>
         </BrowserRouter>
       </AntApp>

@@ -10,6 +10,10 @@ const authService = {
           password,
         },
       );
+
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+
       return response.data;
     } catch (error) {
       throw new Error("Login failed");
@@ -24,11 +28,14 @@ const authService = {
   },
   register: async (username: string, password: string, email: string) => {
     try {
-      const response = await axios.post("/api/auth/register", {
-        username,
-        password,
-        email,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/register",
+        {
+          username,
+          password,
+          email,
+        },
+      );
       return response.data;
     } catch (error) {
       throw new Error("Registration failed");

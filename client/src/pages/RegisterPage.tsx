@@ -24,8 +24,8 @@ import { useNavigate } from "react-router-dom";
 
 type FieldType = {
   username?: string;
+  email?: string;
   password?: string;
-  remember?: string;
 };
 
 const onFinishFaild: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
@@ -33,7 +33,8 @@ const onFinishFaild: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 };
 
 const { Text, Title, Paragraph, Link } = Typography;
-const LoginPage: React.FC = () => {
+
+const RegisterPage: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -42,8 +43,12 @@ const LoginPage: React.FC = () => {
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     console.log("Success: ", values);
-    await authService.login(values.username!, values.password!);
-    navigate("/dashboard");
+    await authService.register(
+      values.username!,
+      values.password!,
+      values.email!,
+    );
+    navigate("/login");
   };
 
   return (
@@ -67,9 +72,9 @@ const LoginPage: React.FC = () => {
               border: 0,
             }}
           >
-            <Title level={4}>Welcome Back!</Title>
+            <Title level={4}>Welcome!</Title>
             <Paragraph>
-              Sign in to access to dasdboard and finding resources.
+              Sign up to access to dasdboard and finding resources.
             </Paragraph>
             <Form
               name="basic"
@@ -89,6 +94,15 @@ const LoginPage: React.FC = () => {
                 <Input size="large" />
               </Form.Item>
               <Form.Item<FieldType>
+                label="Email"
+                name="email"
+                rules={[
+                  { required: true, message: "Please input your email!" },
+                ]}
+              >
+                <Input size="large" />
+              </Form.Item>
+              <Form.Item<FieldType>
                 label="Password"
                 name="password"
                 rules={[
@@ -98,17 +112,9 @@ const LoginPage: React.FC = () => {
                 <Input.Password size="large" />
               </Form.Item>
 
-              <Form.Item<FieldType>
-                name="remember"
-                valuePropName="checked"
-                label={null}
-              >
-                <Checkbox>Remember me</Checkbox>
-              </Form.Item>
-
               <Form.Item label={null}>
                 <Button block type="primary" htmlType="submit" size="large">
-                  Sign In
+                  Sign Up
                 </Button>
               </Form.Item>
             </Form>
@@ -124,14 +130,14 @@ const LoginPage: React.FC = () => {
                 <GoogleOutlined /> Countinue with Google
               </Button>
               <Text>
-                Don't have an Account?{" "}
+                Already have an Account?{" "}
                 <Link
                   onClick={() => {
-                    navigate("/register");
+                    navigate("/login");
                   }}
                 >
-                  Sign up
-                </Link>{" "}
+                  Sign in
+                </Link>
               </Text>
             </Space>
           </Card>
@@ -169,4 +175,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

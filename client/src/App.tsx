@@ -1,122 +1,120 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+import { App as AntApp, ConfigProvider, theme } from "antd";
+
+import LoginPage from "./pages/LoginPage";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <ConfigProvider
+      theme={{
+        algorithm: theme.defaultAlgorithm,
+        token: {
+          colorPrimary: "#144069",
+          colorSuccess: "#52813b",
+          colorWarning: "#d88327",
+          colorError: "#b44425",
+          colorInfo: "#4b479d",
+          colorTextBase: "#4e4e50",
+          colorBgBase: "#f8f7f4",
+          colorPrimaryBg: "#e8eff5",
+          colorPrimaryBgHover: "#c9d8e8",
+          colorPrimaryBorder: "#8aa1b8",
+          colorPrimaryBorderHover: "#56789a",
+          colorPrimaryHover: "#1a5288",
+          colorPrimaryActive: "#0d3050",
+          colorPrimaryText: "#144069",
+          colorPrimaryTextHover: "#1a5288",
+          colorPrimaryTextActive: "#0d3050",
+          colorSuccessBg: "#edf3ea",
+          colorSuccessBgHover: "#d3e3ca",
+          colorSuccessBorder: "#9bbc8c",
+          colorSuccessBorderHover: "#77a360",
+          colorSuccessHover: "#629647",
+          colorSuccessActive: "#41682f",
+          colorSuccessText: "#52813b",
+          colorSuccessTextHover: "#629647",
+          colorSuccessTextActive: "#41682f",
+          colorWarningBg: "#fbf2e7",
+          colorWarningBgHover: "#f5ddbc",
+          colorWarningBorder: "#e8b273",
+          colorWarningBorderHover: "#e09a4b",
+          colorWarningHover: "#e69338",
+          colorWarningActive: "#b0681e",
+          colorWarningText: "#d88327",
+          colorWarningTextHover: "#e69338",
+          colorWarningTextActive: "#b0681e",
+          colorErrorBg: "#f8ebe7",
+          colorErrorBgHover: "#f1d3c9",
+          colorErrorBorder: "#d88a73",
+          colorErrorBorderHover: "#c9664b",
+          colorErrorHover: "#c25333",
+          colorErrorActive: "#96371f",
+          colorErrorText: "#b44425",
+          colorErrorTextHover: "#c25333",
+          colorErrorTextActive: "#96371f",
+          colorInfoBg: "#ecebf7",
+          colorInfoBgHover: "#d4d2ee",
+          colorInfoBorder: "#9b99d1",
+          colorInfoBorderHover: "#7a76bf",
+          colorInfoHover: "#5a56b5",
+          colorInfoActive: "#393682",
+          colorInfoText: "#4b479d",
+          colorInfoTextHover: "#5a56b5",
+          colorInfoTextActive: "#393682",
+          colorText: "rgba(78, 78, 80, 0.88)",
+          colorTextSecondary: "rgba(78, 78, 80, 0.65)",
+          colorTextTertiary: "rgba(78, 78, 80, 0.45)",
+          colorTextQuaternary: "rgba(78, 78, 80, 0.25)",
+          colorTextDisabled: "rgba(78, 78, 80, 0.25)",
+          colorBgContainer: "#ffffff",
+          colorBgElevated: "#ffffff",
+          colorBgLayout: "#f8f7f4",
+          colorBgSpotlight: "rgba(78, 78, 80, 0.85)",
+          colorBgMask: "rgba(78, 78, 80, 0.45)",
+          colorBorder: "#e5e2db",
+          colorBorderSecondary: "#f0eee8",
+          borderRadius: 6,
+          borderRadiusXS: 2,
+          borderRadiusSM: 4,
+          borderRadiusLG: 8,
+          padding: 16,
+          paddingSM: 12,
+          paddingLG: 24,
+          margin: 16,
+          marginSM: 12,
+          marginLG: 24,
+          boxShadow: "0 2px 8px 0 rgba(167, 134, 86, 0.08)",
+          boxShadowSecondary: "0 4px 16px 0 rgba(167, 134, 86, 0.12)",
+        },
+        components: {
+          Button: {
+            defaultBorderColor: "#a78656",
+            defaultBg: "rgba(167, 134, 86, 0.05)",
+          },
+          Tag: {
+            defaultBg: "rgba(167, 134, 86, 0.08)",
+            colorBorder: "rgba(167, 134, 86, 0.3)",
+          },
+          Card: {
+            colorBorder: "rgba(167, 134, 86, 0.2)",
+            headerBg: "rgba(167, 134, 86, 0.04)",
+          },
+        },
+      }}
+    >
+      <AntApp>
+        <BrowserRouter>
+          <Routes>
+            {/* Home page */}
+            <Route path="/" element={<LoginPage />}></Route>
+            <Route path="/dashboard" element={<DashboardLayout />}></Route>
+          </Routes>
+        </BrowserRouter>
+      </AntApp>
+    </ConfigProvider>
+  );
 }
 
-export default App
+export default App;

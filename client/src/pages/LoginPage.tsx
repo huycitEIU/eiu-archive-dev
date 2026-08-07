@@ -18,14 +18,14 @@ import { GoogleOutlined } from "@ant-design/icons";
 
 import { Typography } from "antd";
 
+import authService from "../services/authService";
+import type { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 type FieldType = {
   username?: string;
   password?: string;
   remember?: string;
-};
-
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success: ", values);
 };
 
 const onFinishFaild: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
@@ -37,6 +37,14 @@ const LoginPage: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const navigate = useNavigate();
+
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    console.log("Success: ", values);
+    await authService.login(values.username!, values.password!);
+    navigate("/dashboard");
+  };
 
   return (
     <Layout

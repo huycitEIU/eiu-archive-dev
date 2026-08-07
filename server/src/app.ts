@@ -25,7 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use(authMiddleware); // Apply authentication middleware to all routes below
 
 // Protected routes
-app.use("/api/documents", documentsRoutes);
+app.use("/api", documentsRoutes);
 
 app.use(errorMiddleware); // Error handling middleware
 

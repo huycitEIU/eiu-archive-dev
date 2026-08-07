@@ -27,6 +27,8 @@ import {
 } from "@ant-design/icons";
 import { Outlet, Navigate, useNavigate } from "react-router-dom";
 
+import logo from "../assets/Logo_EIU.png";
+
 const { Header, Footer, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
@@ -112,17 +114,23 @@ const DashboardLayout: React.FC = () => {
           background: colorBgContainer,
           display: "flex",
           alignItems: "center",
+          padding: "0 16px",
         }}
       >
-        <Space align="center">
-          {/* <img
-            style={{ display: "inline-block" }}
-            src={logo}
-            alt="EIU"
-            // height={"24px"}
-          /> */}
-          <Title>EIU Archive</Title>
-        </Space>
+        {/* // Logo */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginRight: "16px",
+          }}
+        >
+          <img src={logo} alt="Logo" style={{ height: "30px" }} />
+          <Title level={4} style={{ margin: 0 }}>
+            EIU Archive
+          </Title>
+        </div>
         <div style={{ flex: 1 }}></div>
         <Space>
           <Button icon={<SearchOutlined />}></Button>
@@ -164,12 +172,12 @@ const DashboardLayout: React.FC = () => {
         </Sider>
         <Layout>
           <Breadcrumb
-            style={{ margin: "16px" }}
+            style={{ margin: "16px " }}
             items={[{ title: "Home" }, { title: "List" }, { title: "App" }]}
           ></Breadcrumb>
           <Content
             style={{
-              margin: "24px 16px 0",
+              margin: "8px 16px 0",
               overflow: "auto",
               borderRadius: borderRadiusLG,
               background: colorBgContainer,

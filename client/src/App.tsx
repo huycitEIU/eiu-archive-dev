@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UploadPage from "./pages/Dashboard/UploadPage";
 import DashboardLayout from "./layouts/DashboardLayout";
+import ManagePage from "./pages/Dashboard/ManagePage";
 
 function App() {
   return (
@@ -116,6 +117,7 @@ function App() {
 
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route path="upload" element={<UploadPage />}></Route>
+              <Route path="manage" element={<ManagePage />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

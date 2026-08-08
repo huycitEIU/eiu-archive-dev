@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../config/prisma.js";
-import {
-  generateUploadPresignedUrl,
-  generateDownloadPresignedUrl,
-} from "../services/storageService.js";
+import { storageService } from "../services/storageService.js";
 
 import { documentRepository } from "../repositories/documentRepository.js";
 import { fileRepository } from "../repositories/fileRepository.js";
@@ -45,7 +42,6 @@ export async function createDocument(
       files,
     );
 
-    // Return the pre-signed URLs to the client
     res.status(200).json({
       success: true,
       message:
@@ -93,11 +89,6 @@ export async function uploadDocument(
       success: true,
       message: "Document upload completed successfully.",
     });
-
-    logger.info(
-      { documentId, files },
-      "Document upload completed successfully.",
-    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 
@@ -267,7 +258,7 @@ export async function downloadFileById(
     }
 
     // Here you would typically generate a pre-signed URL for the file download
-    const presignedUrl = await generateDownloadPresignedUrl(
+    const presignedUrl = await storageService.generateDownloadPresignedUrl(
       file.objectKey,
       file.name,
       file.type,
@@ -296,3 +287,44 @@ export async function downloadFileById(
     logger.error(error, "Error during generating download URL for file.");
   }
 }
+
+export const documentsController = {
+  createDocument,
+  uploadDocument,
+  getDocuments,
+  getDocumentsByUserId,
+  getDocumentCategories,
+  getFilesByDocumentId,
+  downloadFileById,
+
+  deleteDocumentById: async (
+    req: Request<{ documentId: string }>,
+    res: Response,
+  ) => {
+    try {
+      const { documentId } = req.params;
+      if (!documentId) {
+        logger.warn("Missing document id");
+      }
+      await documentService.deleteDocument(documentId);
+
+      res.status(200).json({
+        success: true,
+        message: "Document deleted successfully.",
+      });
+
+      logger.info({ documentId }, "Document deleted successfully.");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while deleting the document.",
+        error: errorMessage,
+      });
+
+      logger.error(error, "Error during document deletion.");
+    }
+  },
+};

@@ -14,8 +14,9 @@ import {
 import type { UploadProps } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 
-import type { CreateDocumentRequestBody, File } from "../../types/document";
+import type { UploadDocument } from "../../types/document";
 import documentService from "../../services/documentService";
+import type { UploadFile } from "../../types/file";
 
 const { Dragger } = Upload;
 
@@ -25,22 +26,21 @@ const UploadPage: React.FC = () => {
   const [fileList, setFileList] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
 
-  const handleUpload = async (
-    values: CreateDocumentRequestBody,
-    fileList: File[],
-  ) => {
+  const handleUpload = async (formData: UploadDocument, fileList: any) => {
     try {
       setLoading(true);
-      await documentService.createDocument({
-        ...values,
-        files: fileList,
-      });
-      setFileList([]);
-      form.resetFields();
-      messageApi.success("Upload successful!");
+      const files: UploadFile[] = fileList.map((file: any) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      }));
+
+      await documentService.createDocument(formData, files);
+
+      messageApi.success("Upload document successfully!");
     } catch (error) {
-      console.error("Upload failed:", error);
-      messageApi.error("Upload failed. Please try again.");
+      console.log(error);
+      messageApi.error("Upload document failed!");
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ const UploadPage: React.FC = () => {
                 size="large"
                 onClick={() => {
                   form.validateFields().then((values) => {
-                    handleUpload(values, fileList as File[]);
+                    handleUpload(values, fileList);
                   });
                 }}
               >

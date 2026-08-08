@@ -150,17 +150,11 @@ const updateDocument = async (
 
 const deleteDocumentById = async (documentId: string) => {
   try {
-    const deletedDocument = await prisma.document.delete({
+    await prisma.document.delete({
       where: { id: documentId },
     });
 
-    if (!deletedDocument) {
-      logger.warn({ documentId }, "Document not found for deletion.");
-      throw new Error("Document not found for deletion.");
-    }
-
     logger.info({ documentId }, "Deleted document successfully.");
-    return deletedDocument;
   } catch (error) {
     logger.error(error, "Error deleting document:");
     throw new Error("An error occurred while deleting the document.");

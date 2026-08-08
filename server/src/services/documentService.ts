@@ -1,6 +1,10 @@
 import type { InsertDocumentData } from "../types/document.js";
 import { documentRepository } from "../repositories/documentRepository.js";
-import { generateUploadPresignedUrl } from "./storageService.js";
+import { fileService } from "./fileService.js";
+
+import { storageService } from "./storageService.js";
+
+import logger from "../utils/logger.js";
 
 export const documentService = {
   createDocument: async (
@@ -19,7 +23,7 @@ export const documentService = {
         files.map(async (file) => {
           const uniqueFileName = `${Date.now()}-${file.name}`;
 
-          const presignedUrl = await generateUploadPresignedUrl(
+          const presignedUrl = await storageService.generateUploadPresignedUrl(
             uniqueFileName,
             file.type,
           );
@@ -42,8 +46,10 @@ export const documentService = {
 
   deleteDocument: async (documentId: string) => {
     try {
+      await fileService.deleteFiles(documentId);
       await documentRepository.deleteDocumentById(documentId);
     } catch (error) {
+      logger.error(error, `Error deleting document by ID: ${documentId}`);
       throw new Error("An error occurred while deleting the document.");
     }
   },

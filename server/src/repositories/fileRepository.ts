@@ -22,6 +22,30 @@ const insertFile = async (file: InsertFileData, documentId: string) => {
   }
 };
 
+const deleteFileByDocumentId = async (documentId: string) => {
+  try {
+    await prisma.file.deleteMany({
+      where: { documentId: documentId },
+    });
+  } catch (error) {
+    logger.error(error, "Error deleting files by document id.");
+    throw new Error("An error occurred while deleting files by document id.");
+  }
+};
+
+const findFiles = async (documentId: string) => {
+  try {
+    return await prisma.file.findMany({
+      where: { documentId: documentId },
+    });
+  } catch (error) {
+    logger.error(error, "Error occurred while finding files by document id.");
+    throw new Error("An error when finding files");
+  }
+};
+
 export const fileRepository = {
   insertFile,
+  deleteFileByDocumentId,
+  findFiles,
 };

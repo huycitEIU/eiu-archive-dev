@@ -1,49 +1,48 @@
 import axios from "axios";
-import type { CreateDocumentRequestBody, Document } from "../types/document";
+import type { Document, UploadDocument } from "../types/document";
+import type { UploadFile } from "../types/file";
 
 const documentService = {
-  createDocument: async (document: CreateDocumentRequestBody) => {
+  createDocument: async (document: UploadDocument, files: UploadFile[]) => {
     try {
-      console.log("Sending document data:", document); // Log the document data being sent
-
-      const documentData = {
-        title: document.title,
-        description: document.description,
-        categoryId: document.categoryId,
-        tags: document.tags,
-        files: document.files.map((file) => ({
-          name: file.name,
-          type: file.type,
-        })),
-      };
-
       const response = await axios.post(
         "http://localhost:3000/api/document/create",
-        documentData,
+        {
+          ...document,
+          files: files,
+        },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         },
       );
+      const documentId = response.data.data.documentId;
+      const presignUrls = response.data.data.presignedUrls;
+      const uploadBody = {
+        documentId: documentId,
+        files: files.map((file, index) => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: presignUrls[index].url.split("?")[0],
+          objectKey: presignUrls[index].objectKey,
+        })),
+      };
 
-      const presignedUrls = response.data.data.presignedUrls;
+      console.log(uploadBody);
 
-      await Promise.all(
-        document.files.map(async (file, index) => {
-          const presignedUrl = presignedUrls[index].url;
-
-          await axios.put(presignedUrl, file, {
-            headers: {
-              "Content-Type": file.type,
-            },
-          });
-        }),
+      await axios.post(
+        "http://localhost:3000/api/document/upload",
+        uploadBody,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
       );
-
-      return response.data;
     } catch (error) {
-      throw new Error("Document upload failed");
+      console.log("Error while creating document.");
     }
   },
 
@@ -59,6 +58,7 @@ const documentService = {
       );
       const documents = response.data.data.map((doc: Document) => ({
         key: doc.id,
+        id: doc.id,
         name: doc.title,
         category: doc.categoryId, // Adjust this based on your actual data structure
         tags: doc.tags || [], // Adjust this based on your actual data structure
@@ -68,6 +68,18 @@ const documentService = {
       return documents;
     } catch (error) {
       throw new Error("Failed to fetch documents");
+    }
+  },
+
+  deleteDocument: async (documentId: string) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/document/${documentId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+    } catch (error) {
+      throw new Error("Failed to delete document");
     }
   },
 };

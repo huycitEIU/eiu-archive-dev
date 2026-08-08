@@ -9,6 +9,8 @@ import {
   downloadFileById,
 } from "../controllers/documentsController.js";
 
+import { documentsController } from "../controllers/documentsController.js";
+
 const router = express.Router();
 
 router.post("/create", createDocument);
@@ -19,5 +21,7 @@ router.get("/:userId/documents", getDocumentsByUserId);
 router.get("/categories", getDocumentCategories);
 router.get("/:documentId/files", getFilesByDocumentId);
 router.all("/:fileId/download", downloadFileById);
+
+router.delete("/:documentId", documentsController.deleteDocumentById);
 
 export default router;

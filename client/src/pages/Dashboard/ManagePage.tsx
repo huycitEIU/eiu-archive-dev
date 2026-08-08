@@ -1,10 +1,11 @@
 import { Button, Flex, Radio, Space } from "antd";
 import React from "react";
 
-import { Table, Tag, Tooltip, Layout, Typography } from "antd";
+import { Table, Tag, Tooltip, Layout, Typography, Modal } from "antd";
 
 import {
-  MoreOutlined,
+  DeleteOutlined,
+  EditOutlined,
   UnorderedListOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
@@ -14,65 +15,95 @@ import categoryService from "../../services/categoryService";
 
 const { Title } = Typography;
 
-let dataSource = Array.from({ length: 20 }, (_, index) => ({
-  key: index,
-  name: `Document ${index + 1}`,
-  tags: ["Tag1", "Tag2", "Tag3"],
-  createdAt: new Date().toLocaleDateString(),
-}));
-
-const columns = [
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    ellipsis: {
-      showTitle: false,
-    },
-    render: (name: string) => (
-      <Tooltip placement="topLeft" title={name}>
-        {name}
-      </Tooltip>
-    ),
-  },
-  {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
-  },
-  {
-    title: "Tags",
-    dataIndex: "tags",
-    key: "tags",
-    ellipsis: {
-      showTitle: false,
-    },
-    render: (tags: string[]) => (
-      <Flex gap={8} wrap="wrap">
-        {tags.map((tag) => (
-          <Tag key={tag}>{tag}</Tag>
-        ))}
-      </Flex>
-    ),
-  },
-  {
-    title: "Created At",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    width: 150,
-  },
-  {
-    title: "",
-    dataIndex: "",
-    key: "actions",
-    width: 50,
-    render: () => <Button type="text" icon={<MoreOutlined />} />,
-  },
-];
-
 const ManagePage: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [dataSource, setDataSource] = React.useState<any[]>([]);
+
+  const handleDeleteDocument = async (documentId: string) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this document?",
+      content: `Document: ${dataSource.find((doc) => doc.id === documentId)?.name}`,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk: async () => {
+        try {
+          await documentService.deleteDocument(documentId);
+          setDataSource((prevDataSource) =>
+            prevDataSource.filter((doc) => doc.id !== documentId),
+          );
+        } catch (error) {
+          console.error("Failed to delete document:", error);
+        }
+      },
+    });
+  };
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (name: string) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name}
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+    },
+    {
+      title: "Tags",
+      dataIndex: "tags",
+      key: "tags",
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (tags: string[]) => (
+        <Flex gap={8} wrap="wrap">
+          {tags.map((tag) => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </Flex>
+      ),
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: 150,
+    },
+    {
+      title: "Actions",
+      dataIndex: "actions",
+      key: "actions",
+      width: 100,
+      render: (_: any, record: any) => (
+        <Space>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => {
+              console.log("Edit document:", record);
+            }}
+          />
+          <Button
+            type="text"
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              handleDeleteDocument(record.key);
+            }}
+          />
+        </Space>
+      ),
+    },
+  ];
 
   React.useEffect(() => {
     const fetchDocuments = async () => {
@@ -89,7 +120,6 @@ const ManagePage: React.FC = () => {
           ...doc,
           category: categoryMap.get(doc.category) || "Unknown",
         }));
-
         setDataSource(documentsWithCategoryNames);
       } catch (error) {
         console.error("Failed to fetch documents:", error);

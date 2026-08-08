@@ -29,3 +29,10 @@ export interface Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface UploadDocument {
+  title: string;
+  categoryId: string;
+  tags: string[];
+  description: string;
+}

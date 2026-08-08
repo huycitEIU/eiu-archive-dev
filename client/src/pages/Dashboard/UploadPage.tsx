@@ -106,9 +106,6 @@ const UploadPage: React.FC = () => {
             ]}
           />
         </Form.Item>
-        <Form.Item label="Tags" name={"tags"}>
-          <Select mode="tags" placeholder="Enter document tags" size="large" />
-        </Form.Item>
         <Form.Item label="Document Description" name={"description"}>
           <Input.TextArea
             placeholder="Enter document description"

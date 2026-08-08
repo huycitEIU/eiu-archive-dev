@@ -75,7 +75,6 @@ const documentService = {
         id: doc.id,
         name: doc.title,
         category: doc.categoryId, // Adjust this based on your actual data structure
-        tags: doc.tags || [], // Adjust this based on your actual data structure
         createdAt: new Date(doc.createdAt).toLocaleDateString(),
       }));
 

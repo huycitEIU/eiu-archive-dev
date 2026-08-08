@@ -33,6 +33,5 @@ export interface Document {
 export interface UploadDocument {
   title: string;
   categoryId: string;
-  tags: string[];
   description: string;
 }

@@ -17,16 +17,30 @@ const documentService = {
           },
         },
       );
+
       const documentId = response.data.data.documentId;
-      const presignUrls = response.data.data.presignedUrls;
+      const presignedUrls = response.data.data.presignedUrls;
+
+      await Promise.all(
+        files.map((file, index) => {
+          const presignedUrl = presignedUrls[index].url;
+
+          return axios.put(presignedUrl, file, {
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+        }),
+      );
+
       const uploadBody = {
         documentId: documentId,
         files: files.map((file, index) => ({
           name: file.name,
           size: file.size,
           type: file.type,
-          url: presignUrls[index].url.split("?")[0],
-          objectKey: presignUrls[index].objectKey,
+          url: presignedUrls[index].url.split("?")[0],
+          objectKey: presignedUrls[index].objectKey,
         })),
       };
 

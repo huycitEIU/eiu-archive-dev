@@ -7,6 +7,7 @@ import {
 
 import { documentRepository } from "../repositories/documentRepository.js";
 import { fileRepository } from "../repositories/fileRepository.js";
+import { documentService } from "../services/documentService.js";
 
 import logger from "../utils/logger.js";
 
@@ -34,35 +35,14 @@ export async function createDocument(
     const { title, description, categoryId, files } = req.body;
     const userId = req.user!.id;
 
-    if (files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng tải lên ít nhất một tệp.",
-      });
-    }
-
-    const document = await documentRepository.insertDocument({
-      title,
-      description,
-      categoryId,
-      userId,
-    });
-
-    // Request a pre-signed URL from the storage service for each file (this part is not implemented here, but you would typically call your storage service's SDK or API to get the URLs)
-    const presignedUrls = await Promise.all(
-      files.map(async (file) => {
-        const uniqueFileName = `${Date.now()}-${file.name}`;
-
-        const presignedUrl = await generateUploadPresignedUrl(
-          uniqueFileName,
-          file.type,
-        );
-        return {
-          name: file.name,
-          url: presignedUrl,
-          objectKey: uniqueFileName, // Store the unique file name for later reference
-        };
-      }),
+    const result = await documentService.createDocument(
+      {
+        title,
+        description,
+        categoryId,
+        userId,
+      },
+      files,
     );
 
     // Return the pre-signed URLs to the client
@@ -71,15 +51,10 @@ export async function createDocument(
       message:
         "Document metadata stored successfully. Pre-signed URLs generated.",
       data: {
-        documentId: document.id,
-        presignedUrls,
+        documentId: result.documentId,
+        presignedUrls: result.presignedUrls,
       },
     });
-
-    logger.info(
-      { documentId: document.id, title, description, categoryId, userId },
-      "Document metadata stored and pre-signed URLs generated successfully.",
-    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
 

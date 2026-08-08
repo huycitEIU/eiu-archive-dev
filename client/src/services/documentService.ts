@@ -1,20 +1,44 @@
 import axios from "axios";
+import type { CreateDocumentRequestBody, Document } from "../types/document";
 
 const documentService = {
-  uploadDocument: async (file: File) => {
+  createDocument: async (document: CreateDocumentRequestBody) => {
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      console.log("Sending document data:", document); // Log the document data being sent
+
+      const documentData = {
+        title: document.title,
+        description: document.description,
+        categoryId: document.categoryId,
+        tags: document.tags,
+        files: document.files.map((file) => ({
+          name: file.name,
+          type: file.type,
+        })),
+      };
 
       const response = await axios.post(
-        "http://localhost:3000/api/documents/upload",
-        formData,
+        "http://localhost:3000/api/document/create",
+        documentData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         },
+      );
+
+      const presignedUrls = response.data.data.presignedUrls;
+
+      await Promise.all(
+        document.files.map(async (file, index) => {
+          const presignedUrl = presignedUrls[index].url;
+
+          await axios.put(presignedUrl, file, {
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+        }),
       );
 
       return response.data;
@@ -33,7 +57,15 @@ const documentService = {
           },
         },
       );
-      return response.data;
+      const documents = response.data.data.map((doc: Document) => ({
+        key: doc.id,
+        name: doc.title,
+        category: doc.categoryId, // Adjust this based on your actual data structure
+        tags: doc.tags || [], // Adjust this based on your actual data structure
+        createdAt: new Date(doc.createdAt).toLocaleDateString(),
+      }));
+
+      return documents;
     } catch (error) {
       throw new Error("Failed to fetch documents");
     }

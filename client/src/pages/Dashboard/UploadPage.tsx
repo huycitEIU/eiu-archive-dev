@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 import {
   Button,
@@ -12,6 +13,10 @@ import {
 } from "antd";
 import type { UploadProps } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
+
+import type { CreateDocumentRequestBody, File } from "../../types/document";
+import documentService from "../../services/documentService";
+
 const { Dragger } = Upload;
 
 const UploadPage: React.FC = () => {
@@ -20,28 +25,31 @@ const UploadPage: React.FC = () => {
   const [fileList, setFileList] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
 
+  const handleUpload = async (
+    values: CreateDocumentRequestBody,
+    fileList: File[],
+  ) => {
+    try {
+      setLoading(true);
+      await documentService.createDocument({
+        ...values,
+        files: fileList,
+      });
+      setFileList([]);
+      form.resetFields();
+      messageApi.success("Upload successful!");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      messageApi.error("Upload failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const props: UploadProps = {
     name: "file",
     multiple: true,
     fileList: fileList,
-
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-
-      if (status === "done") {
-        messageApi.success(`${info.file.name} file uploaded successfully.`);
-      }
-
-      if (status === "error") {
-        messageApi.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
-    },
     onRemove: (file) => {
       setFileList((prevFileList) =>
         prevFileList.filter((f) => f.uid !== file.uid),
@@ -83,6 +91,21 @@ const UploadPage: React.FC = () => {
           <Input placeholder="Enter document title" size="large" />
         </Form.Item>
         <Form.Item
+          label="Category"
+          name={"categoryId"}
+          rules={[{ required: true, message: "Please select a category." }]}
+        >
+          <Select
+            placeholder="Select a category"
+            size="large"
+            options={[
+              { value: "1", label: "Category 1" },
+              { value: "2", label: "Category 2" },
+              { value: "3", label: "Category 3" },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item
           label="Tags"
           name={"tags"}
           rules={[{ required: true, message: "Please enter document tags." }]}
@@ -109,13 +132,12 @@ const UploadPage: React.FC = () => {
                 Reset
               </Button>
               <Button
+                loading={loading}
                 type="primary"
                 size="large"
                 onClick={() => {
                   form.validateFields().then((values) => {
-                    console.log("Form Values:", values);
-                    console.log("Files to upload:", fileList);
-                    // Handle the upload logic here
+                    handleUpload(values, fileList as File[]);
                   });
                 }}
               >

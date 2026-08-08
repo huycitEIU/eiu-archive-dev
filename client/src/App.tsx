@@ -7,7 +7,7 @@ import RegisterPage from "./pages/RegisterPage";
 import UploadPage from "./pages/Dashboard/UploadPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ManagePage from "./pages/Dashboard/ManagePage";
-
+import OverviewPage from "./pages/Dashboard/OverviewPage";
 function App() {
   return (
     <ConfigProvider
@@ -116,6 +116,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />}></Route>
 
             <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route path="overview" element={<OverviewPage />}></Route>
               <Route path="upload" element={<UploadPage />}></Route>
               <Route path="manage" element={<ManagePage />}></Route>
             </Route>

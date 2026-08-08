@@ -11,12 +11,13 @@ import {
 
 const router = express.Router();
 
-router.post("/document/create", createDocument);
-router.post("/document/upload", uploadDocument);
-router.get("/document/list", getDocuments);
-router.get("/document/:userId/documents", getDocumentsByUserId);
-router.get("/document/categories", getDocumentCategories);
-router.get("/document/:documentId/files", getFilesByDocumentId);
-router.all("/document/:fileId/download", downloadFileById);
+router.post("/create", createDocument);
+router.post("/upload", uploadDocument);
+
+router.get("/list", getDocuments);
+router.get("/:userId/documents", getDocumentsByUserId);
+router.get("/categories", getDocumentCategories);
+router.get("/:documentId/files", getFilesByDocumentId);
+router.all("/:fileId/download", downloadFileById);
 
 export default router;

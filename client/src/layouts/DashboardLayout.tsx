@@ -40,6 +40,10 @@ const userMenu = {
       key: "logout",
       icon: <LogoutOutlined />,
       label: "Đăng xuất",
+      onClick: () => {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      },
     },
   ],
 };
@@ -171,16 +175,13 @@ const DashboardLayout: React.FC = () => {
           ></Menu>
         </Sider>
         <Layout>
-          <Breadcrumb
-            style={{ margin: "16px " }}
-            items={[{ title: "Home" }, { title: "List" }, { title: "App" }]}
-          ></Breadcrumb>
           <Content
             style={{
               margin: "8px 16px 0",
               overflow: "auto",
               borderRadius: borderRadiusLG,
               background: colorBgContainer,
+              padding: "16px",
             }}
           >
             <Outlet></Outlet>

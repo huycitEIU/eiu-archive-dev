@@ -1,7 +1,6 @@
 import { Button, Flex, Radio, Space } from "antd";
 import React from "react";
 
-import documentService from "../../services/documentService";
 import { Table, Tag, Tooltip, Layout, Typography } from "antd";
 
 import {
@@ -10,9 +9,12 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 
+import documentService from "../../services/documentService";
+import categoryService from "../../services/categoryService";
+
 const { Title } = Typography;
 
-const dataSource = Array.from({ length: 20 }, (_, index) => ({
+let dataSource = Array.from({ length: 20 }, (_, index) => ({
   key: index,
   name: `Document ${index + 1}`,
   tags: ["Tag1", "Tag2", "Tag3"],
@@ -32,6 +34,11 @@ const columns = [
         {name}
       </Tooltip>
     ),
+  },
+  {
+    title: "Category",
+    dataIndex: "category",
+    key: "category",
   },
   {
     title: "Tags",
@@ -64,6 +71,35 @@ const columns = [
 ];
 
 const ManagePage: React.FC = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [dataSource, setDataSource] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchDocuments = async () => {
+      setLoading(true);
+      try {
+        const documents = await documentService.getDocuments();
+        const categories = await categoryService.getCategories();
+
+        const categoryMap = new Map(
+          categories.map((category: any) => [category.id, category.name]),
+        );
+
+        const documentsWithCategoryNames = documents.map((doc: any) => ({
+          ...doc,
+          category: categoryMap.get(doc.category) || "Unknown",
+        }));
+
+        setDataSource(documentsWithCategoryNames);
+      } catch (error) {
+        console.error("Failed to fetch documents:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDocuments();
+  }, []);
+
   return (
     <Layout
       style={{
@@ -98,6 +134,7 @@ const ManagePage: React.FC = () => {
         dataSource={dataSource}
         columns={columns}
         scroll={{ y: "calc(100vh - 200px)" }}
+        loading={loading}
       />
     </Layout>
   );

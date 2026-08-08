@@ -5,6 +5,7 @@ import cors from "cors";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import documentsRoutes from "./routes/documentsRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 import logger from "./utils/logger.js";
 import { logRequest } from "./middlewares/logger.js";
@@ -25,7 +26,8 @@ app.use("/api/auth", authRoutes);
 app.use(authMiddleware); // Apply authentication middleware to all routes below
 
 // Protected routes
-app.use("/api", documentsRoutes);
+app.use("/api/document", documentsRoutes);
+app.use("/api/category", categoryRoutes);
 
 app.use(errorMiddleware); // Error handling middleware
 

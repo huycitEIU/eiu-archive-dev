@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import {
   Layout,
   theme,
-  Breadcrumb,
   Menu,
   Button,
   Space,
@@ -25,12 +24,12 @@ import {
   SettingOutlined,
   ControlOutlined,
 } from "@ant-design/icons";
-import { Outlet, Navigate, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import logo from "../assets/Logo_EIU.png";
 
 const { Header, Footer, Content, Sider } = Layout;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 type MenuItem = Required<MenuProps>["items"][number];
 

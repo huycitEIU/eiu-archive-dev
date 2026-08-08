@@ -4,7 +4,6 @@ import {
   Form,
   Input,
   Button,
-  Checkbox,
   Card,
   theme,
   Divider,
@@ -19,7 +18,7 @@ import { GoogleOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 
 import authService from "../services/authService";
-import type { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 type FieldType = {

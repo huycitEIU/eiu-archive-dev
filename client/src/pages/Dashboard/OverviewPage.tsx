@@ -2,7 +2,6 @@ import React from "react";
 
 import {
   Layout,
-  Space,
   Typography,
   Card,
   Progress,
@@ -12,8 +11,7 @@ import {
   Table,
 } from "antd";
 
-const { Title, Link, Text } = Typography;
-// const { Content, Sider } = Layout;
+const { Title, Link } = Typography;
 
 const columns = [
   {

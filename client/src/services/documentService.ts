@@ -2,11 +2,13 @@ import axios from "axios";
 import type { Document, UploadDocument } from "../types/document";
 import type { UploadFile } from "../types/file";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 const documentService = {
   createDocument: async (document: UploadDocument, files: UploadFile[]) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/document/create",
+        `${API_URL}/api/document/create`,
         {
           ...document,
           files: files,
@@ -46,15 +48,11 @@ const documentService = {
 
       console.log(uploadBody);
 
-      await axios.post(
-        "http://localhost:3000/api/document/upload",
-        uploadBody,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+      await axios.post(`${API_URL}/api/document/upload`, uploadBody, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      );
+      });
     } catch (error) {
       console.log("Error while creating document.");
     }
@@ -62,14 +60,11 @@ const documentService = {
 
   getDocuments: async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/document/list",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+      const response = await axios.get(`${API_URL}/api/document/list`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      );
+      });
       const documents = response.data.data.map((doc: Document) => ({
         key: doc.id,
         id: doc.id,
@@ -86,7 +81,7 @@ const documentService = {
 
   deleteDocument: async (documentId: string) => {
     try {
-      await axios.delete(`http://localhost:3000/api/document/${documentId}`, {
+      await axios.delete(`${API_URL}/api/document/${documentId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

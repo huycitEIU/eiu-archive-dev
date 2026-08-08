@@ -1,15 +1,14 @@
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 const authService = {
   login: async (username: string, password: string) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        {
-          username,
-          password,
-        },
-      );
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
+        username,
+        password,
+      });
 
       const token = response.data.token;
       localStorage.setItem("token", token);
@@ -28,14 +27,11 @@ const authService = {
   },
   register: async (username: string, password: string, email: string) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
-        {
-          username,
-          password,
-          email,
-        },
-      );
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
+        username,
+        password,
+        email,
+      });
       return response.data;
     } catch (error) {
       throw new Error("Registration failed");

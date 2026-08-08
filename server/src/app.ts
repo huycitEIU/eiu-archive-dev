@@ -19,6 +19,10 @@ app.use(express.json());
 app.use(cors());
 app.use(logRequest);
 
+app.use("/healthz", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 // Public routes
 app.use(healthRoutes);
 app.use("/api/auth", authRoutes);

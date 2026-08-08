@@ -10,6 +10,8 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 
+import { useNavigate } from "react-router-dom";
+
 import documentService from "../../services/documentService";
 import categoryService from "../../services/categoryService";
 
@@ -18,6 +20,7 @@ const { Title } = Typography;
 const ManagePage: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [dataSource, setDataSource] = React.useState<any[]>([]);
+  const navigate = useNavigate();
 
   const handleDeleteDocument = async (documentId: string) => {
     Modal.confirm({
@@ -154,7 +157,14 @@ const ManagePage: React.FC = () => {
             </Radio.Button>
           </Radio.Group>
           <Button type="default">Filter</Button>
-          <Button type="primary">Create Document</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              navigate("/dashboard/upload");
+            }}
+          >
+            Create Document
+          </Button>
         </Space>
       </Flex>
       <Table

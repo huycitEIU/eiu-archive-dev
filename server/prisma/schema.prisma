@@ -105,17 +105,6 @@ model Category {
   documents Document[]
 }
 
-model Tag {
-  id String @id @default(uuid())
-
-  name String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  documents Document[]
-}
-
 model Document {
   id String @id @default(uuid())
 
@@ -142,8 +131,6 @@ model Document {
   comments  Comment[]
   bookmarks Bookmark[]
   ratings   Rating[]
-
-  tags Tag[]
 }
 
 model File {

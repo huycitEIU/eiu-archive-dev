@@ -1,7 +1,7 @@
 import { Button, Flex, Radio, Space } from "antd";
 import React from "react";
 
-import { Table, Tag, Tooltip, Layout, Typography, Modal } from "antd";
+import { Table, Tooltip, Layout, Typography, Modal } from "antd";
 
 import {
   DeleteOutlined,
@@ -60,21 +60,6 @@ const ManagePage: React.FC = () => {
       title: "Category",
       dataIndex: "category",
       key: "category",
-    },
-    {
-      title: "Tags",
-      dataIndex: "tags",
-      key: "tags",
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (tags: string[]) => (
-        <Flex gap={8} wrap="wrap">
-          {tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-        </Flex>
-      ),
     },
     {
       title: "Created At",

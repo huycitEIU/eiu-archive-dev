@@ -1,5 +1,7 @@
 # Server Documentation
 
+v1.0.1
+
 ## Target Architecture
 
 ## Overview
@@ -7,6 +9,12 @@
 This project is the backend of a **Document Storage and Sharing System**. It exposes RESTful APIs for user authentication, document management, file upload/download, and document sharing.
 
 The backend is built with **Node.js** and **Express.js**, uses **Prisma ORM** for database access, **MySQL** as the relational database, and **Cloudflare R2** for object storage.
+
+The backend is deployed on **Render.com** and is accessible via the base URL: `https://eiu-archive-dev.onrender.com`.
+
+The frontend is deployed on **Vercel** and is accessible via the base URL: `https://eiu-archive-dev.vercel.app`.
+
+The database is hosted on **Aiven** with 1CPU, 1GB RAM, and 1GB storage.
 
 This document describes the **target architecture** the project should move toward. The current codebase may still contain logic in controllers while the project is being refactored.
 
@@ -266,6 +274,9 @@ The backend follows these principles:
 | JWT           | Authentication      |
 | Multer        | File upload         |
 | bcrypt        | Password hashing    |
+| Render.com    | Backend hosting     |
+| Vercel        | Frontend hosting    |
+| Aiven         | Database hosting    |
 
 ---
 

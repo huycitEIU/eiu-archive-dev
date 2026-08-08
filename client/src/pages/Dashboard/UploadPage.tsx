@@ -36,6 +36,8 @@ const UploadPage: React.FC = () => {
 
       await documentService.createDocument(formData, files);
 
+      setFileList([]);
+      form.resetFields();
       messageApi.success("Upload document successfully!");
     } catch (error) {
       console.log(error);
@@ -104,11 +106,7 @@ const UploadPage: React.FC = () => {
             ]}
           />
         </Form.Item>
-        <Form.Item
-          label="Tags"
-          name={"tags"}
-          rules={[{ required: true, message: "Please enter document tags." }]}
-        >
+        <Form.Item label="Tags" name={"tags"}>
           <Select mode="tags" placeholder="Enter document tags" size="large" />
         </Form.Item>
         <Form.Item label="Document Description" name={"description"}>

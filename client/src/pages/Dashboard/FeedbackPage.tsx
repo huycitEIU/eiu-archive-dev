@@ -7,7 +7,6 @@ import {
   Form,
   Button,
   Rate,
-  Checkbox,
   theme,
   message,
 } from "antd";

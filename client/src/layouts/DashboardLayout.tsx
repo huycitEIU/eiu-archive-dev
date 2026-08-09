@@ -9,6 +9,7 @@ import {
   Typography,
   Dropdown,
   Avatar,
+  FloatButton,
 } from "antd";
 import type { MenuProps } from "antd";
 import {
@@ -23,6 +24,7 @@ import {
   PieChartOutlined,
   SettingOutlined,
   ControlOutlined,
+  CommentOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -87,7 +89,18 @@ const siderItems: MenuItem[] = [
       },
     ],
   },
-  { key: "help", icon: <QuestionCircleOutlined />, label: "Help" },
+  {
+    key: "help",
+    icon: <QuestionCircleOutlined />,
+    label: "Help",
+    children: [
+      {
+        key: "feedback",
+        icon: <CommentOutlined />,
+        label: "Feedback",
+      },
+    ],
+  },
 ];
 
 const DashboardLayout: React.FC = () => {
@@ -110,8 +123,17 @@ const DashboardLayout: React.FC = () => {
         position: "sticky",
         height: "100vh",
         overflowY: "hidden",
+        background: colorBgContainer,
       }}
     >
+      <FloatButton
+        icon={<CommentOutlined />}
+        type="primary"
+        style={{ right: 24, bottom: 24 }}
+        onClick={() => {
+          navigate("/dashboard/feedback");
+        }}
+      />
       <Header
         style={{
           background: colorBgContainer,
@@ -155,7 +177,12 @@ const DashboardLayout: React.FC = () => {
           </div>
         </Space>
       </Header>
-      <Layout hasSider>
+      <Layout
+        hasSider
+        style={{
+          background: colorBgContainer,
+        }}
+      >
         <Sider
           theme="light"
           collapsible
@@ -171,12 +198,19 @@ const DashboardLayout: React.FC = () => {
             items={siderItems}
             mode="inline"
             onClick={handleMenuClick}
+            style={{
+              border: 0,
+            }}
           ></Menu>
         </Sider>
-        <Layout>
+        <Layout
+          style={{
+            borderRadius: borderRadiusLG,
+          }}
+        >
           <Content
             style={{
-              margin: "8px 16px 0",
+              margin: "8px 8px 0",
               overflow: "auto",
               borderRadius: borderRadiusLG,
               background: colorBgContainer,

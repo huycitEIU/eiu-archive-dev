@@ -27,13 +27,7 @@ export const authService = {
 
     const hashedPassword = await bcryptUtils.hashPassword(password);
 
-    const newUser = await userRepository.createUser(
-      username,
-      email,
-      hashedPassword,
-    );
-
-    return newUser;
+    await userRepository.createUser(username, email, hashedPassword);
   },
 
   async loginUser(userData: { username: string; password: string }) {

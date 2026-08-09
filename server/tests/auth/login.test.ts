@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import request from "supertest";
 import app from "../../src/app.js";
 
-import { mockUserLogin } from "../mock/mockUser.js";
+import { mockUserLogin } from "../mocks/mockUser.js";
 import { HTTP_STATUS } from "../../src/constants/httpStatus.js";
 import { addUser, deleteUserByUsername } from "../helper/database.js";
 

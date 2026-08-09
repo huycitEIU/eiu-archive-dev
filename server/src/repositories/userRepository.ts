@@ -33,8 +33,12 @@ export const userRepository = {
     });
   },
 
-  createUser: (username: string, email: string, hashedPassword: string) => {
-    prisma.user.create({
+  createUser: async (
+    username: string,
+    email: string,
+    hashedPassword: string,
+  ) => {
+    await prisma.user.create({
       data: {
         username,
         email,

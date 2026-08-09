@@ -34,12 +34,26 @@ export const userRepository = {
   },
 
   createUser: (username: string, email: string, hashedPassword: string) => {
-    return prisma.user.create({
+    prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
       },
     });
+  },
+
+  isUsernameExists: async (username: string): Promise<boolean> => {
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+    return !!user;
+  },
+
+  isEmailExists: async (email: string): Promise<boolean> => {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    return !!user;
   },
 };

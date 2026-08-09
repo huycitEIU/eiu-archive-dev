@@ -12,6 +12,7 @@ import { logRequest } from "./middlewares/logger.js";
 import { authMiddleware } from "./middlewares/authMiddleware.js";
 
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(authMiddleware); // Apply authentication middleware to all routes below
 // Protected routes
 app.use("/api/document", documentsRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 app.use(errorMiddleware); // Error handling middleware
 

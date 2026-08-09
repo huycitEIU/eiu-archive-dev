@@ -89,7 +89,7 @@ const RegisterPage: React.FC = () => {
         </div>
         <Title level={4}>Welcome!</Title>
         <Paragraph>
-          Sign up to access to dasdboard and finding resources.
+          Sign up to access to dashboard and finding resources.
         </Paragraph>
         <Form
           name="basic"
@@ -136,7 +136,7 @@ const RegisterPage: React.FC = () => {
           style={{ display: "flex", alignItems: "center", width: "100%" }}
         >
           <Button block size="large">
-            <GoogleOutlined /> Countinue with Google
+            <GoogleOutlined /> Continue with Google
           </Button>
           <Text>
             Already have an Account?{" "}
@@ -176,7 +176,7 @@ const RegisterPage: React.FC = () => {
           >
             <Title level={4}>Welcome!</Title>
             <Paragraph>
-              Sign up to access to dasdboard and finding resources.
+              Sign up to access to dashboard and finding resources.
             </Paragraph>
             <Form
               name="basic"
@@ -229,7 +229,7 @@ const RegisterPage: React.FC = () => {
               style={{ display: "flex", alignItems: "center", width: "100%" }}
             >
               <Button block size="large">
-                <GoogleOutlined /> Countinue with Google
+                <GoogleOutlined /> Continue with Google
               </Button>
               <Text>
                 Already have an Account?{" "}

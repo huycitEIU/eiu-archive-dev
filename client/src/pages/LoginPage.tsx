@@ -86,7 +86,7 @@ const LoginPage: React.FC = () => {
         </div>
         <Title level={4}>Welcome Back!</Title>
         <Paragraph>
-          Sign in to access to dasdboard and finding resources.
+          Sign in to access to dashboard and finding resources.
         </Paragraph>
         <Form
           name="basic"
@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
           style={{ display: "flex", alignItems: "center", width: "100%" }}
         >
           <Button block size="large">
-            <GoogleOutlined /> Countinue with Google
+            <GoogleOutlined /> Continue with Google
           </Button>
           <Text>
             Don't have an Account?{" "}
@@ -174,7 +174,7 @@ const LoginPage: React.FC = () => {
           >
             <Title level={4}>Welcome Back!</Title>
             <Paragraph>
-              Sign in to access to dasdboard and finding resources.
+              Sign in to access to dashboard and finding resources.
             </Paragraph>
             <Form
               name="basic"
@@ -226,7 +226,7 @@ const LoginPage: React.FC = () => {
               style={{ display: "flex", alignItems: "center", width: "100%" }}
             >
               <Button block size="large">
-                <GoogleOutlined /> Countinue with Google
+                <GoogleOutlined /> Continue with Google
               </Button>
               <Text>
                 Don't have an Account?{" "}

@@ -19,9 +19,9 @@ export const authService = {
       throw new ValidationError("Missing required fields.");
     }
 
-    const existingUser = await userRepository.findUserByUsername(username);
+    const isExist = await userRepository.isUsernameExists(username);
 
-    if (existingUser) {
+    if (isExist) {
       throw new ConflictError("Username already exists.");
     }
 

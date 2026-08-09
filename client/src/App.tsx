@@ -8,6 +8,8 @@ import UploadPage from "./pages/Dashboard/UploadPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ManagePage from "./pages/Dashboard/ManagePage";
 import OverviewPage from "./pages/Dashboard/OverviewPage";
+import { FeedbackPage } from "./pages/Dashboard/FeedbackPage";
+
 function App() {
   return (
     <ConfigProvider
@@ -119,6 +121,7 @@ function App() {
               <Route path="overview" element={<OverviewPage />}></Route>
               <Route path="upload" element={<UploadPage />}></Route>
               <Route path="manage" element={<ManagePage />}></Route>
+              <Route path="feedback" element={<FeedbackPage />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

@@ -90,6 +90,20 @@ const documentService = {
       throw new Error("Failed to delete document");
     }
   },
+
+  getAllDocuments: async (): Promise<Document[]> => {
+    try {
+      const res = await axios.get(`${API_URL}/api/document/all`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      return res.data.documents;
+    } catch (error) {
+      throw new Error("Failed to get all documents.");
+    }
+  },
 };
 
 export default documentService;

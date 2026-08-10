@@ -10,6 +10,8 @@ import ManagePage from "./pages/Dashboard/ManagePage";
 import OverviewPage from "./pages/Dashboard/OverviewPage";
 import { FeedbackPage } from "./pages/Dashboard/FeedbackPage";
 import UserPage from "./pages/Dashboard/UserPage";
+import ExploreLayout from "./layouts/ExploreLayout";
+import DiscoveryPage from "./pages/Explore/DiscoveryPage";
 
 function App() {
   return (
@@ -124,6 +126,10 @@ function App() {
               <Route path="manage" element={<ManagePage />}></Route>
               <Route path="feedback" element={<FeedbackPage />}></Route>
               <Route path="user" element={<UserPage />}></Route>
+            </Route>
+
+            <Route path="/explore" element={<ExploreLayout />}>
+              <Route path="discovery" element={<DiscoveryPage />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

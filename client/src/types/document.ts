@@ -24,10 +24,10 @@ export interface Document {
   ratingCount: number;
   averageRating: number;
   categoryId: string;
-  tags: string[];
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+  coverUrl: string;
 }
 
 export interface UploadDocument {

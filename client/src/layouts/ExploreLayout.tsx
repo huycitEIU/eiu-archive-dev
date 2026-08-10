@@ -22,15 +22,13 @@ import {
   SearchOutlined,
   LogoutOutlined,
   UserOutlined,
-  FileOutlined,
-  PlusCircleOutlined,
-  DatabaseOutlined,
-  PieChartOutlined,
-  SettingOutlined,
-  ControlOutlined,
   CommentOutlined,
   MenuOutlined,
-  CompassOutlined,
+  StarOutlined,
+  ClockCircleOutlined,
+  AppstoreOutlined,
+  ShareAltOutlined,
+  FileSearchOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -58,64 +56,33 @@ const userMenu = {
 
 const siderItems: MenuItem[] = [
   {
-    key: "overview",
-    icon: <PieChartOutlined />,
-    label: "Overview",
+    key: "discovery",
+    label: "Discovery",
+    icon: <FileSearchOutlined />,
   },
   {
-    key: "explore",
-    icon: <CompassOutlined />,
-    label: "Explore",
+    key: "recommend",
+    label: "Recommend",
+    icon: <StarOutlined />,
   },
   {
-    key: "document",
-    icon: <FileOutlined />,
-    label: "Document",
-    children: [
-      {
-        key: "upload",
-        icon: <PlusCircleOutlined />,
-        label: "Upload",
-      },
-      {
-        key: "manage",
-        icon: <DatabaseOutlined />,
-        label: "Manage",
-      },
-    ],
+    key: "recent",
+    label: "Recent",
+    icon: <ClockCircleOutlined />,
   },
   {
-    key: "setting",
-    icon: <SettingOutlined />,
-    label: "Setting",
-    children: [
-      {
-        key: "user",
-        icon: <UserOutlined />,
-        label: "User",
-      },
-      {
-        key: "config",
-        icon: <ControlOutlined />,
-        label: "Config",
-      },
-    ],
+    key: "categories",
+    label: "Categories",
+    icon: <AppstoreOutlined />,
   },
   {
-    key: "help",
-    icon: <QuestionCircleOutlined />,
-    label: "Help",
-    children: [
-      {
-        key: "feedback",
-        icon: <CommentOutlined />,
-        label: "Feedback",
-      },
-    ],
+    key: "shared",
+    label: "Shared with me",
+    icon: <ShareAltOutlined />,
   },
 ];
 
-const DashboardLayout: React.FC = () => {
+const ExploreLayout: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -135,11 +102,7 @@ const DashboardLayout: React.FC = () => {
       messageApi.warning("This feature is currently under development.");
       return;
     }
-    if (e.key == "explore") {
-      navigate("/explore");
-      return;
-    }
-    navigate(`/dashboard/${e.key}`);
+    navigate(`/explore/${e.key}`);
   };
 
   const handleCloseModal = () => {
@@ -403,4 +366,4 @@ const DashboardLayout: React.FC = () => {
   );
 };
 
-export default DashboardLayout;
+export default ExploreLayout;

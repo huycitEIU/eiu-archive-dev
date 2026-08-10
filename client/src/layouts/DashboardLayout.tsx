@@ -13,6 +13,7 @@ import {
   Grid,
   Drawer,
   message,
+  Modal,
 } from "antd";
 import type { MenuProps } from "antd";
 import {
@@ -35,7 +36,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo_EIU.png";
 
 const { Header, Footer, Content, Sider } = Layout;
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -117,6 +118,8 @@ const DashboardLayout: React.FC = () => {
   const screens = useBreakpoint();
 
   const currentYear = new Date().getFullYear();
+
+  const [isModalOpen, setModalOpen] = useState(false);
   const [collsapsed, setCollapsed] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -127,6 +130,10 @@ const DashboardLayout: React.FC = () => {
       return;
     }
     navigate(`/dashboard/${e.key}`);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
   };
 
   if (!screens.md) {
@@ -147,6 +154,15 @@ const DashboardLayout: React.FC = () => {
         }}
       >
         {contextHolder}
+
+        <Modal
+          title="Version Notification"
+          onCancel={handleCloseModal}
+          open={isModalOpen}
+          footer={[]}
+        >
+          <Paragraph>What's news? - First thing - Second thing</Paragraph>
+        </Modal>
         <FloatButton
           icon={<CommentOutlined />}
           type="primary"
@@ -176,6 +192,14 @@ const DashboardLayout: React.FC = () => {
             <Title level={4} style={{ margin: 0 }}>
               EIU Archive
             </Title>
+            <Button
+              type="text"
+              onClick={() => {
+                setModalOpen(true);
+              }}
+            >
+              v1.0.2
+            </Button>
           </div>
           <div style={{ flex: 1 }}></div>
           <Button type="primary" onClick={showDrawer}>
@@ -244,6 +268,14 @@ const DashboardLayout: React.FC = () => {
       }}
     >
       {contextHolder}
+      <Modal
+        title="Version Notification"
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={[]}
+      >
+        <Paragraph>What's news? - First thing - Second thing</Paragraph>
+      </Modal>
       <FloatButton
         icon={<CommentOutlined />}
         type="primary"
@@ -273,6 +305,14 @@ const DashboardLayout: React.FC = () => {
           <Title level={4} style={{ margin: 0 }}>
             EIU Archive
           </Title>
+          <Button
+            type="text"
+            onClick={() => {
+              setModalOpen(true);
+            }}
+          >
+            v1.0.2
+          </Button>
         </div>
         <div style={{ flex: 1 }}></div>
         <Space>

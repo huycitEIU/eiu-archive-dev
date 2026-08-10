@@ -1,4 +1,4 @@
-import { Flex } from "antd";
+import { Flex, Spin } from "antd";
 import React, { useState } from "react";
 import DocumentCard, {
   type DocumentCardProps,
@@ -43,7 +43,7 @@ const DiscoveryPage: React.FC = () => {
         }));
         setDocuments(result);
       } catch (error) {
-        throw new Error("Faild to fecth documents.");
+        console.log("Faild to fecth documents.");
       } finally {
         setLoading(false);
       }
@@ -54,13 +54,23 @@ const DiscoveryPage: React.FC = () => {
   return (
     <>
       <Flex gap={"medium"} wrap style={{ width: "100%" }}>
-        {documents.map((document) => (
-          <DocumentCard
-            key={document.id}
-            {...document}
-            onClick={handleCardClick}
-          ></DocumentCard>
-        ))}
+        {loading ? (
+          <Flex
+            justify="center"
+            align="center"
+            style={{ width: "100%", minHeight: 200 }}
+          >
+            <Spin size="large" />
+          </Flex>
+        ) : (
+          documents.map((document) => (
+            <DocumentCard
+              key={document.id}
+              {...document}
+              onClick={handleCardClick}
+            ></DocumentCard>
+          ))
+        )}
       </Flex>
     </>
   );

@@ -70,23 +70,14 @@ const ManagePage: React.FC = () => {
   };
 
   // Feature: Custom filter
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
 
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: FilterDropdownProps["confirm"],
-    dataIndex: DataIndex,
-  ) => {
+  const handleSearch = (confirm: FilterDropdownProps["confirm"]) => {
     confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
   };
 
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
-    setSearchText("");
   };
 
   const getColumnSearchProps = (
@@ -107,17 +98,13 @@ const ManagePage: React.FC = () => {
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
           }
-          onPressEnter={() =>
-            handleSearch(selectedKeys as string[], confirm, dataIndex)
-          }
+          onPressEnter={() => handleSearch(confirm)}
           style={{ marginBottom: 8, display: "block" }}
         />
         <Space>
           <Button
             type="primary"
-            onClick={() =>
-              handleSearch(selectedKeys as string[], confirm, dataIndex)
-            }
+            onClick={() => handleSearch(confirm)}
             icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
@@ -136,8 +123,6 @@ const ManagePage: React.FC = () => {
             size="small"
             onClick={() => {
               confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
             }}
           >
             Filter

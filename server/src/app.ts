@@ -25,7 +25,7 @@ app.use("/healthz", (req, res) => {
 });
 
 // Public routes
-app.use(healthRoutes);
+app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use(authMiddleware); // Apply authentication middleware to all routes below

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 
 import {
   Table,
@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import documentService from "../../services/documentService";
 import categoryService from "../../services/categoryService";
 import type { FilterDropdownProps } from "antd/es/table/interface";
-import type { InputRef, TableColumnType, TableColumnsType } from "antd";
+import type { InputRef, TableColumnType } from "antd";
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;

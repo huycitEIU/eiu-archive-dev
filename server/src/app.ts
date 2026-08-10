@@ -7,7 +7,6 @@ import authRoutes from "./routes/authRoutes.js";
 import documentsRoutes from "./routes/documentsRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 
-import logger from "./utils/logger.js";
 import { logRequest } from "./middlewares/logger.js";
 import { authMiddleware } from "./middlewares/authMiddleware.js";
 

@@ -30,10 +30,6 @@ type FieldType = {
   remember?: string;
 };
 
-const onFinishFaild: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed: ", errorInfo);
-};
-
 const { Text, Title, Paragraph, Link } = Typography;
 
 const LoginPage: React.FC = () => {
@@ -42,13 +38,25 @@ const LoginPage: React.FC = () => {
   } = theme.useToken();
 
   const screens = useBreakpoint();
-
+  const [form] = Form.useForm<FieldType>();
   const navigate = useNavigate();
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    console.log("Success: ", values);
-    await authService.login(values.username!, values.password!);
-    navigate("/dashboard");
+    try {
+      await authService.login(values.username!, values.password!);
+      navigate("/dashboard");
+    } catch (error) {
+      form.setFields([
+        {
+          name: "username",
+          errors: ["Invalid information!"],
+        },
+        {
+          name: "password",
+          errors: ["Invalid information!"],
+        },
+      ]);
+    }
   };
 
   if (!screens.md) {
@@ -89,10 +97,10 @@ const LoginPage: React.FC = () => {
           Sign in to access to dashboard and finding resources.
         </Paragraph>
         <Form
+          form={form}
           name="basic"
           initialValues={{ remember: true }}
           onFinish={onFinish}
-          onFinishFailed={onFinishFaild}
           autoComplete="on"
           layout="vertical"
         >
@@ -177,10 +185,10 @@ const LoginPage: React.FC = () => {
               Sign in to access to dashboard and finding resources.
             </Paragraph>
             <Form
+              form={form}
               name="basic"
               initialValues={{ remember: true }}
               onFinish={onFinish}
-              onFinishFailed={onFinishFaild}
               autoComplete="on"
               layout="vertical"
             >

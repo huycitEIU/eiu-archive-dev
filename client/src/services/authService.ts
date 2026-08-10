@@ -5,19 +5,14 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const authService = {
   login: async (username: string, password: string) => {
     console.log("API_URL:", API_URL); // Log the API_URL to verify it's being set correctly
-    try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, {
-        username,
-        password,
-      });
 
-      const token = response.data.token;
-      localStorage.setItem("token", token);
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
+      username,
+      password,
+    });
 
-      return response.data;
-    } catch (error) {
-      throw new Error("Login failed");
-    }
+    const token = response.data.token;
+    localStorage.setItem("token", token);
   },
   logout: async () => {
     try {

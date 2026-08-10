@@ -111,6 +111,7 @@ model Document {
 
   title       String
   description String?
+  coverUrl    String? @default("/")
 
   bookmarkCount Int @default(0)
   downloadCount Int @default(0)

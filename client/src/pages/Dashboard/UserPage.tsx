@@ -4,7 +4,6 @@ import {
   Card,
   Avatar,
   Typography,
-  Layout,
   Tag,
   Space,
   Tabs,
@@ -17,7 +16,7 @@ import type { DescriptionsProps } from "antd";
 
 import { EditOutlined, UserOutlined } from "@ant-design/icons";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const personalInfo: DescriptionsProps["items"] = [
   {

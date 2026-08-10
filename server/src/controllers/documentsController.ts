@@ -12,6 +12,7 @@ import type {
   CreateDocumentRequestBody,
   UploadDocumentRequestBody,
 } from "../types/document.js";
+import { HTTP_STATUS } from "../constants/httpStatus.js";
 
 /**
  * This function handles the first step of the document upload process.
@@ -326,5 +327,14 @@ export const documentsController = {
 
       logger.error(error, "Error during document deletion.");
     }
+  },
+
+  getAllDocuments: async (_req: Request, res: Response) => {
+    const documents = await documentService.getAllDocuments();
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      documents: documents,
+    });
   },
 };

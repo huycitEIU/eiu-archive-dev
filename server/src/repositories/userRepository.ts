@@ -1,4 +1,5 @@
 import prisma from "../config/prisma.js";
+import logger from "../utils/logger.js";
 
 export const userRepository = {
   deleteUserById: (userId: string) => {
@@ -59,5 +60,15 @@ export const userRepository = {
       where: { email },
     });
     return !!user;
+  },
+
+  findAllUser: async () => {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+      },
+    });
+    return users;
   },
 };

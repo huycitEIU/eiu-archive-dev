@@ -53,4 +53,8 @@ export const documentService = {
       throw new Error("An error occurred while deleting the document.");
     }
   },
+
+  getAllDocuments: async () => {
+    return await documentRepository.findAllDocuments();
+  },
 };

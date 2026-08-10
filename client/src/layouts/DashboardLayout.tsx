@@ -122,7 +122,7 @@ const DashboardLayout: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    if (e.key == "user" || e.key == "config") {
+    if (e.key == "config") {
       messageApi.warning("This feature is currently under development.");
       return;
     }

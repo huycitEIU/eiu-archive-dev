@@ -9,6 +9,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import ManagePage from "./pages/Dashboard/ManagePage";
 import OverviewPage from "./pages/Dashboard/OverviewPage";
 import { FeedbackPage } from "./pages/Dashboard/FeedbackPage";
+import UserPage from "./pages/Dashboard/UserPage";
 
 function App() {
   return (
@@ -122,6 +123,7 @@ function App() {
               <Route path="upload" element={<UploadPage />}></Route>
               <Route path="manage" element={<ManagePage />}></Route>
               <Route path="feedback" element={<FeedbackPage />}></Route>
+              <Route path="user" element={<UserPage />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

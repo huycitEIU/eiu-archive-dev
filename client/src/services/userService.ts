@@ -9,7 +9,7 @@ export const userService = {
   getAllUsers: async (): Promise<{ id: string; username: string }[]> => {
     try {
       const res = await axios.get(`${API_URL}/api/user/all`, {
-        headers,
+        headers: headers,
       });
       return res.data.users;
     } catch (error) {

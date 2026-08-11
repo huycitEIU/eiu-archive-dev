@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from "react";
-import { Card, Tag, Typography, Space, theme } from "antd";
+import { Card, Tag, Space, theme, Grid } from "antd";
 import { BookOutlined, DownloadOutlined, StarFilled } from "@ant-design/icons";
 
 export interface DocumentCardProps {
@@ -19,8 +19,6 @@ const coverStyle: CSSProperties = {
   height: "80px",
   objectFit: "cover",
 };
-
-const { Paragraph } = Typography;
 
 const altColors = [
   "#F599C6",
@@ -55,10 +53,12 @@ const DocumentCard = ({
     () => altColors[Math.floor(Math.random() * altColors.length)],
   );
 
+  const screens = Grid.useBreakpoint();
+
   return (
     <Card
       hoverable
-      style={{ width: 300 }}
+      style={{ width: screens.md ? "30%" : "100%", margin: "auto" }}
       cover={
         coverUrl == "/" ? (
           <div
@@ -85,15 +85,12 @@ const DocumentCard = ({
         title={name}
         description={
           <>
-            <Paragraph ellipsis={true}>
-              <strong>Introduction to Database Systemsa</strong>
-            </Paragraph>
-            <Space vertical>
+            <Space vertical={screens.md}>
               <Space>
                 <Tag color={purple}>{category}</Tag>
                 <Tag color={green}>{username}</Tag>
               </Space>
-              <Space align="end">
+              <Space>
                 <Tag variant="filled" color={orange}>
                   <strong>
                     <StarFilled /> {averageRating}

@@ -121,6 +121,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />}></Route>
 
             <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route path="" element={<OverviewPage />} />
               <Route path="overview" element={<OverviewPage />}></Route>
               <Route path="upload" element={<UploadPage />}></Route>
               <Route path="manage" element={<ManagePage />}></Route>
@@ -129,6 +130,7 @@ function App() {
             </Route>
 
             <Route path="/explore" element={<ExploreLayout />}>
+              <Route path="" element={<DiscoveryPage />}></Route>
               <Route path="discovery" element={<DiscoveryPage />}></Route>
             </Route>
           </Routes>

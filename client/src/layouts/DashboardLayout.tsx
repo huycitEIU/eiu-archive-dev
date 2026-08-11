@@ -148,6 +148,7 @@ const DashboardLayout: React.FC = () => {
     setModalOpen(false);
   };
 
+  // Responsive cho mobile
   if (!screens.md) {
     const showDrawer = () => {
       setOpenDrawer(true);

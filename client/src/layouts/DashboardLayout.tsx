@@ -12,7 +12,6 @@ import {
   FloatButton,
   Grid,
   Drawer,
-  message,
   Modal,
 } from "antd";
 import type { MenuProps } from "antd";
@@ -31,6 +30,7 @@ import {
   CommentOutlined,
   MenuOutlined,
   CompassOutlined,
+  BugOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -98,6 +98,7 @@ const siderItems: MenuItem[] = [
         key: "config",
         icon: <ControlOutlined />,
         label: "Config",
+        disabled: true,
       },
     ],
   },
@@ -110,6 +111,12 @@ const siderItems: MenuItem[] = [
         key: "feedback",
         icon: <CommentOutlined />,
         label: "Feedback",
+      },
+      {
+        key: "report",
+        icon: <BugOutlined />,
+        label: "Report",
+        disabled: true,
       },
     ],
   },
@@ -127,14 +134,9 @@ const DashboardLayout: React.FC = () => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [collsapsed, setCollapsed] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    if (e.key == "config") {
-      messageApi.warning("This feature is currently under development.");
-      return;
-    }
     if (e.key == "explore") {
       navigate("/explore");
       return;
@@ -163,8 +165,6 @@ const DashboardLayout: React.FC = () => {
           background: colorBgContainer,
         }}
       >
-        {contextHolder}
-
         <Modal
           title="Version Notification"
           onCancel={handleCloseModal}
@@ -218,9 +218,11 @@ const DashboardLayout: React.FC = () => {
         </Header>
         <Layout
           hasSider
-          style={{
-            background: colorBgContainer,
-          }}
+          style={
+            {
+              // background: colorBgContainer,
+            }
+          }
         >
           <Layout
             style={{
@@ -229,10 +231,11 @@ const DashboardLayout: React.FC = () => {
           >
             <Content
               style={{
-                margin: "8px 8px 0",
+                // margin: "8px 8px",
                 overflow: "auto",
                 borderRadius: borderRadiusLG,
                 background: colorBgContainer,
+                padding: "8px",
               }}
             >
               <Outlet></Outlet>
@@ -277,7 +280,6 @@ const DashboardLayout: React.FC = () => {
         background: colorBgContainer,
       }}
     >
-      {contextHolder}
       <Modal
         title="Version Notification"
         open={isModalOpen}

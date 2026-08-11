@@ -12,7 +12,6 @@ import {
   FloatButton,
   Grid,
   Drawer,
-  message,
   Modal,
 } from "antd";
 import type { MenuProps } from "antd";
@@ -29,6 +28,7 @@ import {
   AppstoreOutlined,
   ShareAltOutlined,
   FileSearchOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -56,6 +56,11 @@ const userMenu = {
 
 const siderItems: MenuItem[] = [
   {
+    key: "dashboard",
+    label: "Dashboard",
+    icon: <DashboardOutlined />,
+  },
+  {
     key: "discovery",
     label: "Discovery",
     icon: <FileSearchOutlined />,
@@ -64,21 +69,25 @@ const siderItems: MenuItem[] = [
     key: "recommend",
     label: "Recommend",
     icon: <StarOutlined />,
+    disabled: true,
   },
   {
     key: "recent",
     label: "Recent",
     icon: <ClockCircleOutlined />,
+    disabled: true,
   },
   {
     key: "categories",
     label: "Categories",
     icon: <AppstoreOutlined />,
+    disabled: true,
   },
   {
     key: "shared",
     label: "Shared with me",
     icon: <ShareAltOutlined />,
+    disabled: true,
   },
 ];
 
@@ -94,12 +103,11 @@ const ExploreLayout: React.FC = () => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [collsapsed, setCollapsed] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    if (e.key == "config") {
-      messageApi.warning("This feature is currently under development.");
+    if (e.key == "dashboard") {
+      navigate("/dashboard");
       return;
     }
     navigate(`/explore/${e.key}`);
@@ -126,8 +134,6 @@ const ExploreLayout: React.FC = () => {
           background: colorBgContainer,
         }}
       >
-        {contextHolder}
-
         <Modal
           title="Version Notification"
           onCancel={handleCloseModal}
@@ -240,7 +246,6 @@ const ExploreLayout: React.FC = () => {
         background: colorBgContainer,
       }}
     >
-      {contextHolder}
       <Modal
         title="Version Notification"
         open={isModalOpen}

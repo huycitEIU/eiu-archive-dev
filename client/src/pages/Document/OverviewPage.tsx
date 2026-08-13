@@ -30,7 +30,7 @@ import {
   FlagOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import documentService from "../../services/documentService";
 import Description from "./components/Description";
 import type { Category } from "../../types/category";
@@ -105,7 +105,6 @@ const OverviewPage: React.FC = () => {
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
 
-  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   const handleOpenReport = (): void => {

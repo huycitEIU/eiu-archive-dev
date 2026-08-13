@@ -23,10 +23,7 @@ import {
   UserOutlined,
   CommentOutlined,
   MenuOutlined,
-  ClockCircleOutlined,
   EyeOutlined,
-  InfoCircleOutlined,
-  BranchesOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";

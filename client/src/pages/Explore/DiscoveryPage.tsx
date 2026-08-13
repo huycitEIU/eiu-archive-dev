@@ -7,14 +7,18 @@ import DocumentCard, {
 import documentService from "../../services/documentService";
 import categoryService from "../../services/categoryService";
 import { userService } from "../../services/userService";
-
-const handleCardClick = (id: string) => {
-  console.log("Clicked: ", id);
-};
+import { useNavigate } from "react-router-dom";
 
 const DiscoveryPage: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentCardProps[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleCardClick = (id: string) => {
+    console.log("Clicked: ", id);
+    navigate(`/document/${id}`);
+  };
 
   React.useEffect(() => {
     const fetchDocuments = async () => {

@@ -23,7 +23,7 @@ router.get("/:documentId/files", getFilesByDocumentId);
 router.all("/:fileId/download", downloadFileById);
 
 router.get("/all", documentsController.getAllDocuments);
-
+router.get("/:id", documentsController.getDocumentById);
 router.delete("/:documentId", documentsController.deleteDocumentById);
 
 export default router;

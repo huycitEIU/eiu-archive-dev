@@ -1,60 +1,20 @@
 import axios from "axios";
-import type { Document, UploadDocument } from "../types/document";
-import type { UploadFile } from "../types/file";
+import type { Document, CreateDocumentData } from "../types/document";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const documentService = {
-  createDocument: async (document: UploadDocument, files: UploadFile[]) => {
+  createDocument: async (document: CreateDocumentData): Promise<string> => {
     try {
-      const response = await axios.post(
-        `${API_URL}/api/document/create`,
-        {
-          ...document,
-          files: files,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
-
-      const documentId = response.data.data.documentId;
-      const presignedUrls = response.data.data.presignedUrls;
-
-      await Promise.all(
-        files.map((file, index) => {
-          const presignedUrl = presignedUrls[index].url;
-
-          return axios.put(presignedUrl, file, {
-            headers: {
-              "Content-Type": file.type,
-            },
-          });
-        }),
-      );
-
-      const uploadBody = {
-        documentId: documentId,
-        files: files.map((file, index) => ({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          url: presignedUrls[index].url.split("?")[0],
-          objectKey: presignedUrls[index].objectKey,
-        })),
-      };
-
-      console.log(uploadBody);
-
-      await axios.post(`${API_URL}/api/document/upload`, uploadBody, {
+      const res = await axios.post(`${API_URL}/api/document/create`, document, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-    } catch (error) {
-      console.log("Error while creating document.");
+
+      return res.data.document.id;
+    } catch (err) {
+      throw err;
     }
   },
 
@@ -102,6 +62,19 @@ const documentService = {
       return res.data.documents;
     } catch (error) {
       throw new Error("Failed to get all documents.");
+    }
+  },
+  getDocumentById: async (id: string): Promise<Document> => {
+    try {
+      const res = await axios.get(`${API_URL}/api/document/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      return res.data.document;
+    } catch (error) {
+      throw new Error("Failed to fetch document information.");
     }
   },
 };

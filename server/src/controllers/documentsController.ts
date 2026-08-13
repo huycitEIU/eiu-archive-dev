@@ -30,38 +30,23 @@ export async function createDocument(
   res: Response,
 ) {
   try {
-    const { title, description, categoryId, files } = req.body;
-    const userId = req.user!.id;
+    const data = req.body;
+    const userId = req.user.id;
 
-    const result = await documentService.createDocument(
-      {
-        title,
-        description,
-        categoryId,
-        userId,
-      },
-      files,
-    );
+    const documentId = await documentService.createDocument({
+      ...data,
+      userId,
+    });
 
-    res.status(200).json({
+    res.status(HTTP_STATUS.OK).json({
       success: true,
-      message:
-        "Document metadata stored successfully. Pre-signed URLs generated.",
-      data: {
-        documentId: result.documentId,
-        presignedUrls: result.presignedUrls,
+      message: "Created document successful",
+      document: {
+        id: documentId,
       },
     });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Error occurred during document creation.",
-      error: errorMessage,
-    });
-
-    logger.error(error, "Error during document creation.");
+  } catch (err) {
+    logger.error("Error while creating document.");
   }
 }
 
@@ -213,7 +198,7 @@ export async function getFilesByDocumentId(
 
     res.status(200).json({
       success: true,
-      data: files,
+      files: files,
     });
 
     logger.info(
@@ -335,6 +320,16 @@ export const documentsController = {
     res.status(HTTP_STATUS.OK).json({
       success: true,
       documents: documents,
+    });
+  },
+
+  getDocumentById: async (req: Request<{ id: string }>, res: Response) => {
+    const { id } = req.params;
+    const document = await documentService.getDocumentById(id);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      document: document,
     });
   },
 };

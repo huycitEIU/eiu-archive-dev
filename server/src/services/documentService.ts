@@ -7,10 +7,7 @@ import { storageService } from "./storageService.js";
 import logger from "../utils/logger.js";
 
 export const documentService = {
-  createDocument: async (
-    data: InsertDocumentData,
-    files: { name: string; type: string }[],
-  ) => {
+  createDocument: async (data: InsertDocumentData) => {
     try {
       const newDocument = await documentRepository.insertDocument({
         title: data.title,
@@ -19,26 +16,7 @@ export const documentService = {
         userId: data.userId,
       });
 
-      const presignedUrls = await Promise.all(
-        files.map(async (file) => {
-          const uniqueFileName = `${Date.now()}-${file.name}`;
-
-          const presignedUrl = await storageService.generateUploadPresignedUrl(
-            uniqueFileName,
-            file.type,
-          );
-          return {
-            name: file.name,
-            url: presignedUrl,
-            objectKey: uniqueFileName, // Store the unique file name for later reference
-          };
-        }),
-      );
-
-      return {
-        documentId: newDocument.id,
-        presignedUrls,
-      };
+      return newDocument.id;
     } catch (error) {
       throw new Error("An error occurred while creating the document.");
     }
@@ -56,5 +34,9 @@ export const documentService = {
 
   getAllDocuments: async () => {
     return await documentRepository.findAllDocuments();
+  },
+
+  getDocumentById: async (id: string) => {
+    return await documentRepository.findDocumentById(id);
   },
 };

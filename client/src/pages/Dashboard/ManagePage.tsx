@@ -348,7 +348,7 @@ const ManagePage: React.FC = () => {
           <Button
             type="primary"
             onClick={() => {
-              navigate("/dashboard/upload");
+              navigate("/dashboard/create");
             }}
           >
             Create Document

@@ -4,14 +4,16 @@ import { App as AntApp, ConfigProvider, theme } from "antd";
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import UploadPage from "./pages/Dashboard/UploadPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ManagePage from "./pages/Dashboard/ManagePage";
-import OverviewPage from "./pages/Dashboard/OverviewPage";
+import OverviewDashboardPage from "./pages/Dashboard/OverviewPage";
 import { FeedbackPage } from "./pages/Dashboard/FeedbackPage";
 import UserPage from "./pages/Dashboard/UserPage";
 import ExploreLayout from "./layouts/ExploreLayout";
 import DiscoveryPage from "./pages/Explore/DiscoveryPage";
+import DocumentLayout from "./layouts/DocumentLayout";
+import OverviewDocumentPage from "./pages/Document/OverviewPage.js";
+import CreateDocumentPage from "./pages/Dashboard/CreateDocumentPage.js";
 
 function App() {
   return (
@@ -121,9 +123,12 @@ function App() {
             <Route path="/register" element={<RegisterPage />}></Route>
 
             <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route path="" element={<OverviewPage />} />
-              <Route path="overview" element={<OverviewPage />}></Route>
-              <Route path="upload" element={<UploadPage />}></Route>
+              <Route path="" element={<OverviewDashboardPage />} />
+              <Route
+                path="overview"
+                element={<OverviewDashboardPage />}
+              ></Route>
+              <Route path="create" element={<CreateDocumentPage />}></Route>
               <Route path="manage" element={<ManagePage />}></Route>
               <Route path="feedback" element={<FeedbackPage />}></Route>
               <Route path="user" element={<UserPage />}></Route>
@@ -132,6 +137,11 @@ function App() {
             <Route path="/explore" element={<ExploreLayout />}>
               <Route path="" element={<DiscoveryPage />}></Route>
               <Route path="discovery" element={<DiscoveryPage />}></Route>
+            </Route>
+
+            <Route path="/document/:id" element={<DocumentLayout />}>
+              <Route path="" element={<OverviewDocumentPage />}></Route>
+              <Route path="overview" element={<OverviewDocumentPage />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

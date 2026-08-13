@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import documentsRoutes from "./routes/documentsRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import fileRoutes from "./routes/fileRoutes.js";
 
 import { logRequest } from "./middlewares/logger.js";
 import { authMiddleware } from "./middlewares/authMiddleware.js";
@@ -35,6 +36,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/document", documentsRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/file", fileRoutes);
 
 app.use(errorMiddleware); // Error handling middleware
 

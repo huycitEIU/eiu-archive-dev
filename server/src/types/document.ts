@@ -12,11 +12,6 @@ export interface CreateDocumentRequestBody {
   title: string;
   description: string;
   categoryId: string;
-  tags: string[];
-  files: {
-    name: string;
-    type: string;
-  }[];
 }
 
 export interface UploadDocumentRequestBody {

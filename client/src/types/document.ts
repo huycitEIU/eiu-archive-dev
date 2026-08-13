@@ -9,11 +9,6 @@ export interface CreateDocumentRequestBody {
   }[];
 }
 
-export interface File {
-  name: string;
-  type: string;
-}
-
 export interface Document {
   id: string;
   title: string;
@@ -30,8 +25,9 @@ export interface Document {
   coverUrl: string;
 }
 
-export interface UploadDocument {
+export interface CreateDocumentData {
   title: string;
   categoryId: string;
-  description: string;
+  description?: string;
+  coverImage?: File;
 }

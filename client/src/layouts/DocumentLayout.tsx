@@ -21,16 +21,13 @@ import {
   SearchOutlined,
   LogoutOutlined,
   UserOutlined,
-  FileOutlined,
-  PlusCircleOutlined,
-  DatabaseOutlined,
-  PieChartOutlined,
-  SettingOutlined,
-  ControlOutlined,
   CommentOutlined,
   MenuOutlined,
-  CompassOutlined,
-  BugOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
+  InfoCircleOutlined,
+  BranchesOutlined,
+  ArrowLeftOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -58,71 +55,18 @@ const userMenu = {
 
 const siderItems: MenuItem[] = [
   {
+    key: "back",
+    icon: <ArrowLeftOutlined />,
+    label: "Back",
+  },
+  {
     key: "overview",
-    icon: <PieChartOutlined />,
+    icon: <EyeOutlined />,
     label: "Overview",
-  },
-  {
-    key: "explore",
-    icon: <CompassOutlined />,
-    label: "Explore",
-  },
-  {
-    key: "document",
-    icon: <FileOutlined />,
-    label: "Document",
-    children: [
-      {
-        key: "create",
-        icon: <PlusCircleOutlined />,
-        label: "Create",
-      },
-      {
-        key: "manage",
-        icon: <DatabaseOutlined />,
-        label: "Manage",
-      },
-    ],
-  },
-  {
-    key: "setting",
-    icon: <SettingOutlined />,
-    label: "Setting",
-    children: [
-      {
-        key: "user",
-        icon: <UserOutlined />,
-        label: "User",
-      },
-      {
-        key: "config",
-        icon: <ControlOutlined />,
-        label: "Config",
-        disabled: true,
-      },
-    ],
-  },
-  {
-    key: "help",
-    icon: <QuestionCircleOutlined />,
-    label: "Help",
-    children: [
-      {
-        key: "feedback",
-        icon: <CommentOutlined />,
-        label: "Feedback",
-      },
-      {
-        key: "report",
-        icon: <BugOutlined />,
-        label: "Report",
-        disabled: true,
-      },
-    ],
   },
 ];
 
-const DashboardLayout: React.FC = () => {
+const DocumentLayout: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -137,11 +81,9 @@ const DashboardLayout: React.FC = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    if (e.key == "explore") {
-      navigate("/explore");
-      return;
+    if (e.key == "back") {
+      navigate(-1);
     }
-    navigate(`/dashboard/${e.key}`);
   };
 
   const handleCloseModal = () => {
@@ -219,11 +161,9 @@ const DashboardLayout: React.FC = () => {
         </Header>
         <Layout
           hasSider
-          style={
-            {
-              // background: colorBgContainer,
-            }
-          }
+          style={{
+            background: colorBgContainer,
+          }}
         >
           <Layout
             style={{
@@ -232,11 +172,10 @@ const DashboardLayout: React.FC = () => {
           >
             <Content
               style={{
-                // margin: "8px 8px",
+                margin: "8px 8px 0",
                 overflow: "auto",
                 borderRadius: borderRadiusLG,
                 background: colorBgContainer,
-                padding: "8px",
               }}
             >
               <Outlet></Outlet>
@@ -406,4 +345,4 @@ const DashboardLayout: React.FC = () => {
   );
 };
 
-export default DashboardLayout;
+export default DocumentLayout;

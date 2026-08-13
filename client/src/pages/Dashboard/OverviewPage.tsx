@@ -41,28 +41,7 @@ const columns = [
   },
 ];
 
-const dataSource = [
-  {
-    time: "2023-06-01 10:00:00",
-    user: "John Doe",
-    activity: "Liked your post",
-  },
-  {
-    time: "2023-06-01 09:30:00",
-    user: "Jane Smith",
-    activity: "Commented on your photo",
-  },
-  {
-    time: "2023-06-01 09:00:00",
-    user: "Alice Johnson",
-    activity: "Started following you",
-  },
-  {
-    time: "2023-06-01 08:30:00",
-    user: "Bob Brown",
-    activity: "Shared your video",
-  },
-];
+const dataSource: any[] = [];
 
 const OverviewPage: React.FC = () => {
   return (

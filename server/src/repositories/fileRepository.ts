@@ -44,8 +44,15 @@ const findFiles = async (documentId: string) => {
   }
 };
 
+async function findFile(id: string) {
+  return await prisma.file.findUnique({
+    where: { id: id },
+  });
+}
+
 export const fileRepository = {
   insertFile,
   deleteFileByDocumentId,
   findFiles,
+  findFile,
 };

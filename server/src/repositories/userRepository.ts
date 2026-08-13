@@ -22,6 +22,13 @@ export const userRepository = {
 
   findUserById: (userId: string) => {
     return prisma.user.findUnique({
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        isActive: true,
+      },
       where: { id: userId },
     });
   },

@@ -37,6 +37,6 @@ export const documentService = {
   },
 
   getDocumentById: async (id: string) => {
-    return await documentRepository.findDocumentById(id);
+    return await documentRepository.findFullDocumentDataById(id);
   },
 };

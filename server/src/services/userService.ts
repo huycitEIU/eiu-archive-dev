@@ -6,4 +6,9 @@ export const userService = {
     const users = await userRepository.findAllUser();
     return users;
   },
+
+  getUserById: async (id: string) => {
+    const user = await userRepository.findUserById(id);
+    return user;
+  },
 };

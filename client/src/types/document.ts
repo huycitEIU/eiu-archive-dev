@@ -25,6 +25,29 @@ export interface Document {
   coverUrl: string;
 }
 
+export interface OverviewDocument {
+  id: string;
+  title: string;
+  description: string;
+  bookmarkCount: number;
+  downloadCount: number;
+  ratingSum: number;
+  ratingCount: number;
+  averageRating: number;
+  categoryId: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  coverUrl: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+  };
+}
+
 export interface CreateDocumentData {
   title: string;
   categoryId: string;

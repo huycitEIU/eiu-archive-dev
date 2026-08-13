@@ -1,5 +1,9 @@
 import axios from "axios";
-import type { Document, CreateDocumentData } from "../types/document";
+import type {
+  Document,
+  CreateDocumentData,
+  OverviewDocument,
+} from "../types/document";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -64,7 +68,7 @@ const documentService = {
       throw new Error("Failed to get all documents.");
     }
   },
-  getDocumentById: async (id: string): Promise<Document> => {
+  getDocumentById: async (id: string): Promise<OverviewDocument> => {
     try {
       const res = await axios.get(`${API_URL}/api/document/${id}`, {
         headers: {

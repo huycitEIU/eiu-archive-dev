@@ -18,4 +18,25 @@ export const userController = {
       });
     }
   },
+
+  getUserById: async (
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { id } = req.params;
+      const user = await userService.getUserById(id);
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        user: user,
+      });
+    } catch (err) {
+      logger.error(err, "User Service");
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Error while get user info",
+      });
+    }
+  },
 };

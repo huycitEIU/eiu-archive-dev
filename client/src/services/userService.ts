@@ -15,4 +15,17 @@ export const userService = {
       throw new Error("Faild to get all users");
     }
   },
+
+  getUserById: async (id: string) => {
+    try {
+      const res = await axios.get(`${API_URL}/api/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      return res.data.user;
+    } catch (err) {
+      throw new Error("Failed to get user info");
+    }
+  },
 };

@@ -20,7 +20,7 @@ import {
 } from "antd";
 import React, { useState } from "react";
 
-import type { Document } from "../../types/document";
+import type { OverviewDocument } from "../../types/document";
 import type { FileInfo } from "../../types/file";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -101,7 +101,9 @@ const OverviewPage: React.FC = () => {
   const sceens = Grid.useBreakpoint();
   const [isOpenReport, setReportOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [documentData, setDocumentData] = useState<Document | null>(null);
+  const [documentData, setDocumentData] = useState<OverviewDocument | null>(
+    null,
+  );
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
 
@@ -178,10 +180,10 @@ const OverviewPage: React.FC = () => {
 
                 <Space vertical>
                   <Text>
-                    <strong>Tran Gia Huy</strong>
-                    <Tag color={"green"}>Student</Tag>
+                    <strong>{documentData?.user.username}</strong>
+                    <Tag color={"green"}>{documentData?.user.role}</Tag>
                   </Text>
-                  <Text>huy.trangia.cit23@eiu.edu.vn</Text>
+                  <Text>{documentData?.user.email}</Text>
                 </Space>
               </Space>
               <Space>
@@ -230,8 +232,16 @@ const OverviewPage: React.FC = () => {
               </Card>
             </Flex>
             <Divider></Divider>
-            <Title level={4}>Files</Title>
+            <Flex justify="space-between" align="center">
+              <Title style={{ margin: 0 }} level={4}>
+                Files
+              </Title>
+              <Button disabled type="primary">
+                <DownloadOutlined /> Download Document
+              </Button>
+            </Flex>
             <Table
+              style={{ marginTop: "8px" }}
               loading={loading}
               dataSource={fileList}
               columns={columns}

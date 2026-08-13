@@ -161,6 +161,29 @@ const deleteDocumentById = async (documentId: string) => {
   }
 };
 
+const findFullDocumentDataById = async (id: string) => {
+  try {
+    const documentData = await prisma.document.findUnique({
+      where: { id: id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            role: true,
+            isActive: true,
+          },
+        },
+      },
+    });
+    return documentData;
+  } catch (err) {
+    logger.error(err, "Document Repository: ");
+    throw new Error("Error while find full document data");
+  }
+};
+
 export const documentRepository = {
   insertDocument,
   findAllDocuments,
@@ -171,4 +194,5 @@ export const documentRepository = {
   findFileById,
   updateDocument,
   deleteDocumentById,
+  findFullDocumentDataById,
 };

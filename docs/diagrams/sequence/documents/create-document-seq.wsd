@@ -9,26 +9,32 @@
     skinparam maxMessageSize 300
 
     'Đăng tải tài liệu lên theo mô hình Presigned URL
-    user -> client: Chọn tệp & nhấn "Upload"
+    user -> client: Fill the form and click "Create"
     activate client
-    client -> server: POST /api/documents/create \n(chứa thông tin tài liệu)
+    client -> server: POST /api/document/create
+    activate server
+    server --> client: Trả về documentId
+    deactivate server
+    client -> server: POST /api/file/upload
     activate server
     server -> fileStorage: Yêu cầu Presigned URL từ File Storage Server
     activate fileStorage
     fileStorage --> server: Trả về Presigned URL
     deactivate fileStorage
     server --> client: Trả về Presigned URL
+    deactivate server
     client -> fileStorage: Upload tệp lên File Storage Server bằng Presigned URL
     activate fileStorage
     fileStorage --> client: Upload thành công
     deactivate fileStorage
-    client -> server: POST /api/documents/upload \n(chứa thông tin tài liệu & đường dẫn tệp)
+    client -> server: POST /api/file/confirm-upload
     activate server
     server -> db: Lưu thông tin tài liệu vào cơ sở dữ liệu
     activate db
-    db --> server: Lưu thành công, trả về document_id
+    db --> server: Lưu thành công
     deactivate db
-    server --> client: Trả về kết quả thành công (201 Created) + document_id
+    server --> client: Trả về kết quả thành công
+    deactivate server
     client --> user: Hiển thị "Tải lên thành công"
-
+    deactivate client
 @enduml

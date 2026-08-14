@@ -7,28 +7,29 @@
     participant "File Storage Server" as fileStorage
 
     ' User đánh dấu tài liệu
-    user -> client: Chọn tài liệu & nhấn "Star"
+    user -> client: Chọn tài liệu & nhấn "bookmark"
     activate client
-    client -> server: POST /api/documents/star/{document_id}
+    client -> server: POST /api/document/:id/bookmark
     activate server
 
     ' Nếu người dùng đã đánh dấu tài liệu trước đó, thì bỏ đánh dấu
-    server -> db: Kiểm tra xem người dùng đã đánh dấu tài liệu chưa (document_id, user_id)
+    server -> db: Kiểm tra xem người dùng \n đã đánh dấu tài liệu chưa
     activate db
     alt Người dùng đã đánh dấu tài liệu trước đó
         db --> server: Người dùng đã đánh dấu tài liệu
-        server -> db: Bỏ đánh dấu tài liệu (xóa bản ghi trong bảng DocumentStar)
+        server -> db: Bỏ đánh dấu tài liệu
         db --> server: Bỏ đánh dấu thành công
         server --> client: Trả về kết quả thành công (200 OK) + thông báo
         client --> user: Hiển thị "Bỏ đánh dấu tài liệu thành công"
     else Người dùng chưa đánh dấu tài liệu
         db --> server: Người dùng chưa đánh dấu tài liệu
-        server -> db: Thêm bản ghi đánh dấu tài liệu (document_id, user_id)
+        server -> db: Thêm bản ghi đánh dấu tài liệu
         db --> server: Thêm thành công
-        server -> db: Cập nhật số lượng đánh dấu của tài liệu (tăng number_of_stars)
-        db --> server: Cập nhật thành công
-        server --> client: Trả về kết quả thành công (201 Created) + thông báo
+        deactivate db
+        server --> client: Trả về kết quả thành công + thông báo
+        deactivate server
         client --> user: Hiển thị "Đánh dấu tài liệu thành công"
+        deactivate client
     end 
     
     deactivate server

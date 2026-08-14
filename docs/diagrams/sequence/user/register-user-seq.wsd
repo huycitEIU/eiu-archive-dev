@@ -6,25 +6,25 @@
     database "Database" as db
 
     ' User đăng ký tài khoản
-    user -> client: Nhập thông tin đăng ký & nhấn "Register"
+    user -> client: Nhập thông tin đăng ký & nhấn "Sign up"
     activate client
-    client -> server: POST /api/auth/register (chứa thông tin đăng ký)
+    client -> server: POST /api/auth/register
     activate server
-    server -> db: Kiểm tra thông tin đăng ký (email, username)
+    server -> db: Kiểm tra thông tin đăng ký
     activate db
     alt Thông tin đăng ký hợp lệ
         db --> server: Thông tin hợp lệ
         server -> db: Lưu thông tin người dùng mới
         db --> server: Lưu thành công
-        server --> client: Trả về kết quả thành công (201 Created)
+        server --> client: Trả về kết quả thành công
         client --> user: Hiển thị "Đăng ký thành công"
     else Thông tin đăng ký không hợp lệ
-        db --> server: Thông tin không hợp lệ (email đã tồn tại, username đã tồn tại)
-        server --> client: Trả về lỗi (400 Bad Request)
+        db --> server: Thông tin không hợp lệ
+        deactivate db
+        server --> client: Trả về lỗi
+        deactivate server
         client --> user: Hiển thị thông báo lỗi
+        deactivate client
     end
-    deactivate db
-    deactivate server
-    deactivate client
 
 @enduml

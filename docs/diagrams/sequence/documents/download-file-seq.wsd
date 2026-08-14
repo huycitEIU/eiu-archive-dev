@@ -1,0 +1,32 @@
+@startuml DownloadDocumentSequence
+    autonumber
+    actor "User" as user
+    participant "Client (App/Web)" as client
+    participant "Backend Server" as server
+    database "Database" as db
+    participant "File Storage Server" as fileStorage
+
+    ' User tải xuống tài liệu
+    user -> client: "Download"
+    activate client
+    client -> server: GET /api/file/:id/download
+    activate server
+    server -> db: Lấy thông tin file
+    activate db
+    db --> server: Trả về thông tin file (gồm objectKey)
+    deactivate db
+
+    server -> fileStorage: Yêu cầu link tải từ File Storage
+    activate fileStorage
+    fileStorage --> server: Trả về link tải
+    deactivate fileStorage
+
+    server --> client: Trả về kết quả thành công (200 OK) + link tải
+    deactivate server
+    client -> fileStorage: Tải xuống bằng link tải
+    activate fileStorage
+    fileStorage --> client: File cần tải
+    deactivate fileStorage
+    client --> user: Hiển thị "Tải xuống thành công"
+    deactivate client
+@enduml

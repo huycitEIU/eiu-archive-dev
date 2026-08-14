@@ -7,7 +7,7 @@
     participant "File Storage Server" as fileStorage
 
     ' User xóa tài liệu
-    user -> client: Chọn tài liệu & nhấn "Delete"
+    user -> client: "Delete"
     activate client
     client --> user: Hiển thị hộp thoại xác nhận xóa
     alt Huỷ xoá
@@ -15,7 +15,7 @@
         client --> user: Hủy xóa, không thực hiện gì
     else Xác nhận xóa
         user -> client: Nhấn "Confirm"
-        client -> server: DELETE /api/documents/delete/{document_id}
+        client -> server: DELETE api/document/:documentId
         activate server
         server -> db: Xóa thông tin tài liệu khỏi cơ sở dữ liệu (document_id)
         activate db
@@ -26,7 +26,8 @@
         fileStorage --> server: Xóa thành công
         deactivate fileStorage
         server --> client: Trả về kết quả thành công (200 OK)
-        client --> user: Hiển thị "Xóa thành công"
         deactivate server
+        client --> user: Hiển thị "Xóa thành công"
+        deactivate client
     end
 @enduml

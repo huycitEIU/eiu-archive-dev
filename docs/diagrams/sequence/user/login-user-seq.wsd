@@ -6,23 +6,23 @@
     database "Database" as db
 
     ' User đăng nhập tài khoản
-    user -> client: Nhập thông tin đăng nhập & nhấn "Login"
+    user -> client: Nhập thông tin đăng nhập & nhấn "Sign in"
     activate client
-    client -> server: POST /api/auth/login (chứa thông tin đăng nhập)
+    client -> server: POST /api/auth/login
     activate server
-    server -> db: Kiểm tra thông tin đăng nhập (email, password)
+    server -> db: Kiểm tra thông tin đăng nhập
     activate db
     alt Thông tin đăng nhập hợp lệ
         db --> server: Thông tin hợp lệ
-        server --> client: Trả về kết quả thành công (200 OK) + Token
-        client --> user: Hiển thị "Đăng nhập thành công"
+        server --> client: Trả về kết quả thành công + Token
+        client --> user: Lưu token vào localStorage
     else Thông tin đăng nhập không hợp lệ
-        db --> server: Thông tin không hợp lệ (email không tồn tại, password sai)
-        server --> client: Trả về lỗi (401 Unauthorized)
+        db --> server: Thông tin không hợp lệ
+        deactivate db
+        server --> client: Trả về lỗi
+        deactivate server
         client --> user: Hiển thị thông báo lỗi
+        deactivate client
     end
-    deactivate db
-    deactivate server
-    deactivate client
 
 @enduml

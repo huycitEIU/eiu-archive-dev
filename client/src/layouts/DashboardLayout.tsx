@@ -31,6 +31,7 @@ import {
   MenuOutlined,
   CompassOutlined,
   BugOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -81,6 +82,11 @@ const siderItems: MenuItem[] = [
         key: "manage",
         icon: <DatabaseOutlined />,
         label: "Manage",
+      },
+      {
+        key: "bookmark",
+        icon: <BookOutlined />,
+        label: "Bookmark",
       },
     ],
   },

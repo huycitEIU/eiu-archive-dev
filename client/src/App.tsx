@@ -14,6 +14,7 @@ import DiscoveryPage from "./pages/Explore/DiscoveryPage";
 import DocumentLayout from "./layouts/DocumentLayout";
 import OverviewDocumentPage from "./pages/Document/OverviewPage.js";
 import CreateDocumentPage from "./pages/Dashboard/CreateDocumentPage.js";
+import BookmarkPage from "./pages/Dashboard/BookmarkPage.js";
 
 function App() {
   return (
@@ -130,6 +131,7 @@ function App() {
               ></Route>
               <Route path="create" element={<CreateDocumentPage />}></Route>
               <Route path="manage" element={<ManagePage />}></Route>
+              <Route path="bookmark" element={<BookmarkPage />}></Route>
               <Route path="feedback" element={<FeedbackPage />}></Route>
               <Route path="user" element={<UserPage />}></Route>
             </Route>

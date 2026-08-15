@@ -2,6 +2,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client from "../config/s3Client.js";
@@ -72,8 +73,29 @@ const deleteFile = async (objectKey: string) => {
   }
 };
 
+async function listFilesByDocumentId(documentId: string) {
+  const command = new ListObjectsV2Command({
+    Bucket: process.env.STORAGE_BUCKET_NAME,
+    Prefix: `${documentId}/`,
+  });
+  const result = await s3Client.send(command);
+  return result.Contents ?? [];
+}
+
+async function getFileStream(objectKey: string) {
+  const command = new GetObjectCommand({
+    Bucket: process.env.STORAGE_BUCKET_NAME,
+    Key: objectKey,
+  });
+  const result = await s3Client.send(command);
+
+  return result.Body;
+}
+
 export const storageService = {
   generateDownloadPresignedUrl,
   generateUploadPresignedUrl,
   deleteFile,
+  listFilesByDocumentId,
+  getFileStream,
 };

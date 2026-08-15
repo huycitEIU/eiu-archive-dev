@@ -284,6 +284,19 @@ async function getBookmarkedDocuments(userId: string) {
   return documents;
 }
 
+async function increaseDownloadCount(documentId: string) {
+  await prisma.document.update({
+    where: {
+      id: documentId,
+    },
+    data: {
+      downloadCount: {
+        increment: 1,
+      },
+    },
+  });
+}
+
 export const documentRepository = {
   insertDocument,
   findAllDocuments,
@@ -299,4 +312,5 @@ export const documentRepository = {
   findBookmark,
   deleteBookmark,
   getBookmarkedDocuments,
+  increaseDownloadCount,
 };

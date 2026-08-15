@@ -59,4 +59,8 @@ export const documentService = {
   getBookmarkedDocuments: async (userId: string) => {
     return await documentRepository.getBookmarkedDocuments(userId);
   },
+
+  increaseDownloandCount: async (documentId: string) => {
+    await documentRepository.increaseDownloadCount(documentId);
+  },
 };

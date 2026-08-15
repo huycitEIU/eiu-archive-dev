@@ -13,6 +13,7 @@ import type {
   UploadDocumentRequestBody,
 } from "../types/document.js";
 import { HTTP_STATUS } from "../constants/httpStatus.js";
+import { archiveService } from "../services/archiveService.js";
 
 /**
  * This function handles the first step of the document upload process.
@@ -396,5 +397,44 @@ export const documentsController = {
       success: true,
       document: document,
     });
+  },
+
+  downloadAll: async (req: Request<{ id: string }>, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      const archive = await archiveService.createDocumentZip(id);
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename="${id}.zip"`);
+
+      archive.on("error", (err) => {
+        logger.error(err, "Archive");
+
+        if (!res.headersSent) {
+          res.status(500).json({
+            success: false,
+            message: "Error while creating ZIP.",
+          });
+        } else {
+          res.destroy(err);
+        }
+      });
+
+      archive.pipe(res);
+
+      await archive.finalize();
+      await documentService.increaseDownloandCount(id);
+    } catch (err) {
+      logger.error(err, "Document Controller");
+
+      if (!res.headersSent) {
+        return res.status(500).json({
+          success: false,
+          message: "Error while downloading documents.",
+        });
+      }
+
+      res.destroy(err as Error);
+    }
   },
 };

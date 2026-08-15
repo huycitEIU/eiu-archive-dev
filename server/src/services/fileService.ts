@@ -42,12 +42,7 @@ async function confirmUpload(
   try {
     await Promise.all(
       files.map(async (file) => {
-        const { name, type, objectKey, size } = file;
         await fileRepository.insertFile(file, documentId);
-        logger.info(
-          { name, type, objectKey, documentId },
-          "File Service: Confirmed upload for file.",
-        );
       }),
     );
   } catch (error) {

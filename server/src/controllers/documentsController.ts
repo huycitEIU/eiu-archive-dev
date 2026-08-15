@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import prisma from "../config/prisma.js";
 import { storageService } from "../services/storageService.js";
 
-import { documentRepository } from "../repositories/documentRepository.js";
 import { fileRepository } from "../repositories/fileRepository.js";
 import { documentService } from "../services/documentService.js";
 
@@ -283,6 +282,35 @@ export const documentsController = {
   getDocumentCategories,
   getFilesByDocumentId,
   downloadFileById,
+  rateDocument: async (
+    req: Request<{ id: string }, {}, { rating: number }>,
+    res: Response,
+  ) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      const rating = req.body.rating;
+
+      const result = await documentService.rate(id, userId, rating);
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: {
+          rating: {
+            myRating: rating,
+            sum: result.ratingSum,
+            count: result.ratingCount,
+          },
+        },
+      });
+    } catch (err) {
+      logger.error(err, "Document Controller: ");
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Error while rating documents",
+      });
+    }
+  },
   getBookmarkedDocuments: async (req: Request, res: Response) => {
     try {
       const userId = req.user.id;

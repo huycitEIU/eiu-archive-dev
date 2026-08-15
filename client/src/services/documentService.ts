@@ -182,6 +182,43 @@ const documentService = {
       return [];
     }
   },
+  rateDocument: async (documentId: string, rating: number) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/api/document/${documentId}/rating`,
+        {
+          rating,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      return res.data.data.rating;
+    } catch (err) {
+      console.log(err);
+      return -1;
+    }
+  },
+  getDocumentRating: async (documentId: string) => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/api/document/${documentId}/rating`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      return res.data.data.rating;
+    } catch (err) {
+      console.log(err);
+      return -1;
+    }
+  },
 };
 
 export default documentService;

@@ -22,6 +22,7 @@ import {
   FilterOutlined,
   SearchOutlined,
   BookTwoTone,
+  EyeOutlined,
 } from "@ant-design/icons";
 
 import { useNavigate } from "react-router-dom";
@@ -189,6 +190,13 @@ const BookmarkPage: React.FC = () => {
       width: 100,
       render: (_: any, record: any) => (
         <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            onClick={() => {
+              navigate(`/document/${record.id}/overview`);
+            }}
+          />
           <Button
             danger
             type="text"

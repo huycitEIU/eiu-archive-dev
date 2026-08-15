@@ -104,6 +104,8 @@ const EditDocumentPage: React.FC = () => {
   const [documentData, setDocumentData] = useState<OverviewDocument | null>(
     null,
   );
+  const [currentRating, setCurrentRating] = useState(0);
+  const [currentRatingCount, setCurrentRatingCount] = useState(0);
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
   const { id } = useParams<{ id: string }>();
@@ -117,9 +119,12 @@ const EditDocumentPage: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        setDocumentData(await documentService.getDocumentById(id));
+        const document = await documentService.getDocumentById(id);
+        setDocumentData(document);
         setCategoryData(await categoryService.getCategories());
         setFileList(await fileService.getFilesByDocumentId(id));
+        setCurrentRatingCount(document.ratingCount);
+        setCurrentRating(document.averageRating);
       } catch (error) {
         console.log(error);
       } finally {
@@ -137,6 +142,18 @@ const EditDocumentPage: React.FC = () => {
       return;
     }
     await documentService.downloadDocument(documentId);
+  }
+
+  async function handleRating(rating: number) {
+    const documentId = documentData?.id;
+    if (!documentId) {
+      messageApi.error("Cannot download document.");
+      return;
+    }
+    const res = await documentService.rateDocument(documentId, rating);
+    setCurrentRating(res.sum / res.count);
+    setCurrentRatingCount(res.count);
+    messageApi.success("Rating successful.");
   }
 
   return (
@@ -198,12 +215,14 @@ const EditDocumentPage: React.FC = () => {
               <Divider vertical={sceens.md}></Divider>
               <Card>
                 <Card.Meta
-                  title="Rating"
+                  title={`Rating (${currentRatingCount})`}
                   description={
                     <>
                       <Rate
                         defaultValue={documentData?.averageRating}
                         size="large"
+                        value={currentRating}
+                        onChange={handleRating}
                       ></Rate>
                     </>
                   }

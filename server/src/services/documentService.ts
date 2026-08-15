@@ -7,6 +7,9 @@ import { storageService } from "./storageService.js";
 import logger from "../utils/logger.js";
 
 export const documentService = {
+  rate: async (documentId: string, userId: string, rating: number) => {
+    return await documentRepository.rate(documentId, userId, rating);
+  },
   createDocument: async (data: InsertDocumentData) => {
     try {
       const newDocument = await documentRepository.insertDocument({

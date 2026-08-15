@@ -110,6 +110,9 @@ const OverviewPage: React.FC = () => {
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [currentRating, setCurrentRating] = useState(0);
+  const [currentRatingCount, setCurrentRatingCount] = useState(0);
+
   const { id } = useParams<{ id: string }>();
 
   const handleOpenReport = (): void => {
@@ -121,13 +124,16 @@ const OverviewPage: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        setDocumentData(await documentService.getDocumentById(id));
+        const document = await documentService.getDocumentById(id);
+        setDocumentData(document);
         setCategoryData(await categoryService.getCategories());
         setFileList(await fileService.getFilesByDocumentId(id));
 
         const isBookmarked = await documentService.checkBookmark(id);
         console.log(isBookmarked);
         setIsBookmarked(isBookmarked);
+        setCurrentRatingCount(document.ratingCount);
+        setCurrentRating(document.averageRating);
       } catch (error) {
         console.log(error);
       } finally {
@@ -161,6 +167,18 @@ const OverviewPage: React.FC = () => {
       return;
     }
     await documentService.downloadDocument(documentId);
+  }
+
+  async function handleRating(rating: number) {
+    const documentId = documentData?.id;
+    if (!documentId) {
+      messageApi.error("Cannot download document.");
+      return;
+    }
+    const res = await documentService.rateDocument(documentId, rating);
+    setCurrentRating(res.sum / res.count);
+    setCurrentRatingCount(res.count);
+    messageApi.success("Rating successful.");
   }
 
   return (
@@ -252,12 +270,14 @@ const OverviewPage: React.FC = () => {
               <Divider vertical={sceens.md}></Divider>
               <Card>
                 <Card.Meta
-                  title="Rating"
+                  title={`Rating (${currentRatingCount})`}
                   description={
                     <>
                       <Rate
                         defaultValue={documentData?.averageRating}
                         size="large"
+                        value={currentRating}
+                        onChange={handleRating}
                       ></Rate>
                     </>
                   }

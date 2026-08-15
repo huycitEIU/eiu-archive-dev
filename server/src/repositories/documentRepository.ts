@@ -297,6 +297,78 @@ async function increaseDownloadCount(documentId: string) {
   });
 }
 
+async function rate(documentId: string, userId: string, newRating: number) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const document = await tx.document.findUnique({
+        where: {
+          id: documentId,
+        },
+        select: {
+          ratingCount: true,
+          ratingSum: true,
+        },
+      });
+
+      if (!document) {
+        throw new Error("Document not found");
+      }
+
+      const oldRating = await tx.rating.findUnique({
+        where: {
+          userId_documentId: {
+            userId,
+            documentId,
+          },
+        },
+        select: {
+          score: true,
+        },
+      });
+
+      await tx.rating.upsert({
+        where: {
+          userId_documentId: {
+            documentId,
+            userId,
+          },
+        },
+        update: {
+          score: newRating,
+        },
+        create: {
+          documentId,
+          userId,
+          score: newRating,
+        },
+      });
+
+      const ratingCount = oldRating
+        ? document.ratingCount
+        : document.ratingCount + 1;
+
+      const ratingSum =
+        document.ratingSum + newRating - (oldRating?.score ?? 0);
+
+      await tx.document.update({
+        where: {
+          id: documentId,
+        },
+        data: {
+          ratingCount,
+          ratingSum,
+          averageRating: ratingSum / ratingCount,
+        },
+      });
+
+      return { ratingCount, ratingSum };
+    });
+  } catch (err) {
+    logger.error(err, "Document Repository");
+    throw new Error("Error while rating document");
+  }
+}
+
 export const documentRepository = {
   insertDocument,
   findAllDocuments,
@@ -313,4 +385,5 @@ export const documentRepository = {
   deleteBookmark,
   getBookmarkedDocuments,
   increaseDownloadCount,
+  rate,
 };

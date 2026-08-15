@@ -24,7 +24,6 @@ import {
   ArrowLeftOutlined,
   EditOutlined,
   UploadOutlined,
-  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 

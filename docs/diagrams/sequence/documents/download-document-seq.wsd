@@ -1,0 +1,41 @@
+@startumlname Download All Document Files - Streaming
+title Download All Document Files - Streaming
+actor User
+participant "Frontend" as FE
+participant "Document Controller" as DC
+participant "Archive Service" as AS
+participant "Storage Service" as SS
+database "Cloudflare R2" as R2
+participant "Archiver" as ZIP
+
+User -> FE: Click "Download All"
+
+FE -> DC: GET /document/{documentId}/download-all
+
+DC -> AS: createDocumentZip(documentId)
+
+AS -> SS: listFilesByDocumentId(documentId)
+SS -> R2: ListObjectsV2(documentId/)
+R2 --> SS: Object keys
+SS --> AS: Object keys
+
+AS -> ZIP: Create ZIP archive
+
+loop Each file
+    AS -> SS: getFileStream(objectKey)
+    SS -> R2: GetObject(objectKey)
+    R2 --> SS: Readable stream
+    SS --> AS: Readable stream
+    AS -> ZIP: append(stream, fileName)
+end
+
+AS --> DC: Return ZIP archive
+
+DC -> FE: 200 OK\nContent-Type: application/zip
+DC -> ZIP: pipe(res)
+DC -> ZIP: finalize()
+
+ZIP --> FE: ZIP data stream
+FE --> User: Save documentId.zip
+
+@enduml

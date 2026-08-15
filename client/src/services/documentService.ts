@@ -81,6 +81,80 @@ const documentService = {
       throw new Error("Failed to fetch document information.");
     }
   },
+  bookmark: async (documentId: string): Promise<boolean> => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/api/document/bookmark`,
+        {
+          documentId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+      return res.data.data.isBookmarked;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  },
+  checkBookmark: async (documentId: string): Promise<boolean> => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/api/document/${documentId}/bookmark`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+      return res.data.data.isBookmarked;
+    } catch (err) {
+      console.error("Error while checking bookmark.");
+      return false;
+    }
+  },
+  removeBookmark: async (documentId: string): Promise<boolean> => {
+    try {
+      const res = await axios.delete(
+        `${API_URL}/api/document/${documentId}/bookmark`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+      return res.data.success;
+    } catch (err) {
+      console.error("Error while checking bookmark.");
+      return false;
+    }
+  },
+  getBookmarkedDocuments: async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/document/bookmarked`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const doucments = res.data.data.documents.map((document: any) => {
+        return {
+          id: document.id,
+          name: document.title,
+          category: document.category.name,
+          author: document.user.username,
+        };
+      });
+
+      return doucments;
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
+  },
 };
 
 export default documentService;

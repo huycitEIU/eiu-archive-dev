@@ -282,6 +282,71 @@ export const documentsController = {
   getDocumentCategories,
   getFilesByDocumentId,
   downloadFileById,
+  getBookmarkedDocuments: async (req: Request, res: Response) => {
+    try {
+      const userId = req.user.id;
+      const documents = await documentService.getBookmarkedDocuments(userId);
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: {
+          documents,
+        },
+      });
+    } catch (err) {
+      logger.error(err, "Document Controller: ");
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Error while getting bookmarked documents",
+      });
+    }
+  },
+  isBookmark: async (req: Request<{ documentId: string }>, res: Response) => {
+    try {
+      const userId = req.user.id;
+      const { documentId } = req.params;
+
+      const isBookmarked = await documentService.isBookmark(documentId, userId);
+
+      res.set("Cache-Control", "no-store");
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: {
+          isBookmarked,
+        },
+      });
+    } catch (err) {
+      logger.error(err, "Document Controller");
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Error while checking bookmark document.",
+      });
+    }
+  },
+  bookmark: async (
+    req: Request<{}, {}, { documentId: string }>,
+    res: Response,
+  ) => {
+    try {
+      const { documentId } = req.body;
+      const userId = req.user.id;
+      const isBookmarked = await documentService.bookmark(documentId, userId);
+
+      res.set("Cache-Control", "no-store");
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: {
+          isBookmarked,
+        },
+      });
+    } catch (err) {
+      logger.error(err, "Document Controller: ");
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Error while bookmarking document.",
+      });
+    }
+  },
 
   deleteDocumentById: async (
     req: Request<{ documentId: string }>,

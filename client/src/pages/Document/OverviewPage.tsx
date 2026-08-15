@@ -16,6 +16,7 @@ import {
   Table,
   Tag,
   Tooltip,
+  message,
   Typography,
 } from "antd";
 import React, { useState } from "react";
@@ -25,9 +26,10 @@ import type { FileInfo } from "../../types/file";
 import type { ColumnsType } from "antd/es/table";
 import {
   BookOutlined,
+  BookTwoTone,
   DownloadOutlined,
   EyeOutlined,
-  FlagOutlined,
+  FlagTwoTone,
   UserOutlined,
 } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
@@ -99,6 +101,7 @@ const reportOptions: string[] = ["Selection 1", "Selection 2", "Selection 3"];
 
 const OverviewPage: React.FC = () => {
   const sceens = Grid.useBreakpoint();
+  const [messageApi, messageHolder] = message.useMessage();
   const [isOpenReport, setReportOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [documentData, setDocumentData] = useState<OverviewDocument | null>(
@@ -106,7 +109,7 @@ const OverviewPage: React.FC = () => {
   );
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
-
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const { id } = useParams<{ id: string }>();
 
   const handleOpenReport = (): void => {
@@ -121,6 +124,10 @@ const OverviewPage: React.FC = () => {
         setDocumentData(await documentService.getDocumentById(id));
         setCategoryData(await categoryService.getCategories());
         setFileList(await fileService.getFilesByDocumentId(id));
+
+        const isBookmarked = await documentService.checkBookmark(id);
+        console.log(isBookmarked);
+        setIsBookmarked(isBookmarked);
       } catch (error) {
         console.log(error);
       } finally {
@@ -130,6 +137,23 @@ const OverviewPage: React.FC = () => {
 
     fetchData();
   }, [id]);
+
+  const handleBookmark = async (): Promise<void> => {
+    const documentId = documentData?.id;
+    const userId = documentData?.user.id;
+    if (!documentId || !userId) {
+      messageApi.error("Cannot bookmark document.");
+      return;
+    }
+
+    const isBookmarked = await documentService.bookmark(documentId);
+    setIsBookmarked(isBookmarked);
+    if (isBookmarked) {
+      messageApi.success(`Bookmark document: ${documentData.title}`);
+    } else {
+      messageApi.info(`Unbookmark document: ${documentData.title}`);
+    }
+  };
 
   return (
     <>
@@ -143,6 +167,7 @@ const OverviewPage: React.FC = () => {
         </Flex>
       ) : (
         <Layout.Content>
+          {messageHolder}
           <Modal
             open={isOpenReport}
             onOk={handleOpenReport}
@@ -188,13 +213,13 @@ const OverviewPage: React.FC = () => {
               </Space>
               <Space>
                 <Tooltip title="Bookmark">
-                  <Button disabled type="text" size="large">
-                    <BookOutlined />
+                  <Button type="text" size="large" onClick={handleBookmark}>
+                    {isBookmarked ? <BookTwoTone /> : <BookOutlined />}
                   </Button>
                 </Tooltip>
                 <Tooltip title="Report">
                   <Button onClick={handleOpenReport} type="text" size="large">
-                    <FlagOutlined />
+                    <FlagTwoTone twoToneColor={"red"} />
                   </Button>
                 </Tooltip>
               </Space>

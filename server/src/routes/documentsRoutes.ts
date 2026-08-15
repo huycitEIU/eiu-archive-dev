@@ -22,6 +22,9 @@ router.get("/categories", getDocumentCategories);
 router.get("/:documentId/files", getFilesByDocumentId);
 router.all("/:fileId/download", downloadFileById);
 
+router.post("/bookmark", documentsController.bookmark);
+router.get("/:documentId/bookmark", documentsController.isBookmark);
+router.get("/bookmarked", documentsController.getBookmarkedDocuments);
 router.get("/all", documentsController.getAllDocuments);
 router.get("/:id", documentsController.getDocumentById);
 router.delete("/:documentId", documentsController.deleteDocumentById);

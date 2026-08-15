@@ -184,6 +184,106 @@ const findFullDocumentDataById = async (id: string) => {
   }
 };
 
+const insertBookmark = async (documentId: string, userId: string) => {
+  try {
+    await prisma.bookmark.create({
+      data: {
+        documentId: documentId,
+        userId: userId,
+      },
+    });
+    await prisma.document.update({
+      where: {
+        id: documentId,
+      },
+      data: {
+        bookmarkCount: {
+          increment: 1,
+        },
+      },
+    });
+  } catch (err) {
+    logger.error(err, "Document Repository: ");
+    throw new Error("Error while inserting bookmark.");
+  }
+};
+
+async function findBookmark(documentId: string, userId: string) {
+  try {
+    const bookmark = await prisma.bookmark.findUnique({
+      where: {
+        userId_documentId: {
+          userId,
+          documentId,
+        },
+      },
+    });
+    logger.info({ documentId, userId });
+    return bookmark;
+  } catch (err) {
+    logger.error(err, "Document Repository: ");
+    throw new Error("Error while finding bookmark.");
+  }
+}
+
+async function deleteBookmark(documentId: string, userId: string) {
+  try {
+    await prisma.bookmark.delete({
+      where: {
+        userId_documentId: {
+          userId,
+          documentId,
+        },
+      },
+    });
+    await prisma.document.update({
+      where: {
+        id: documentId,
+      },
+      data: {
+        bookmarkCount: {
+          decrement: 1,
+        },
+      },
+    });
+  } catch (err) {
+    logger.error(err, "Document Repository: ");
+    throw new Error("Error while deleting bookmark");
+  }
+}
+
+async function getBookmarkedDocuments(userId: string) {
+  const bookmarks = await prisma.bookmark.findMany({
+    select: {
+      id: true,
+
+      document: {
+        select: {
+          id: true,
+          title: true,
+
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+
+          user: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+        },
+      },
+    },
+    where: { userId },
+  });
+  const documents = bookmarks.map((bookmark) => bookmark.document);
+  return documents;
+}
+
 export const documentRepository = {
   insertDocument,
   findAllDocuments,
@@ -195,4 +295,8 @@ export const documentRepository = {
   updateDocument,
   deleteDocumentById,
   findFullDocumentDataById,
+  insertBookmark,
+  findBookmark,
+  deleteBookmark,
+  getBookmarkedDocuments,
 };

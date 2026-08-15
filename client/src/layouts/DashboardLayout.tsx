@@ -16,9 +16,7 @@ import {
 } from "antd";
 import type { MenuProps } from "antd";
 import {
-  BellOutlined,
   QuestionCircleOutlined,
-  SearchOutlined,
   LogoutOutlined,
   UserOutlined,
   FileOutlined,
@@ -62,6 +60,7 @@ const siderItems: MenuItem[] = [
     key: "overview",
     icon: <PieChartOutlined />,
     label: "Overview",
+    disabled: true,
   },
   {
     key: "explore",
@@ -335,9 +334,6 @@ const DashboardLayout: React.FC = () => {
         </div>
         <div style={{ flex: 1 }}></div>
         <Space>
-          <Button icon={<SearchOutlined />}></Button>
-          <Button icon={<BellOutlined />}></Button>
-          <Button icon={<QuestionCircleOutlined />}></Button>
           <div>
             <Dropdown menu={userMenu} placement="bottomRight">
               <div

@@ -12,6 +12,7 @@ import {
   Flex,
   Radio,
   Space,
+  message,
 } from "antd";
 
 import {
@@ -22,6 +23,7 @@ import {
   PlusCircleOutlined,
   FilterOutlined,
   SearchOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 
 import { useNavigate } from "react-router-dom";
@@ -48,6 +50,7 @@ const ManagePage: React.FC = () => {
   const [dataSource, setDataSource] = React.useState<any[]>([]);
   const navigate = useNavigate();
   const screens = useBreakpoint();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const handleDeleteDocument = async (documentId: string) => {
     Modal.confirm({
@@ -156,14 +159,20 @@ const ManagePage: React.FC = () => {
     },
   });
 
+  async function handleDownloadDocument(record: any) {
+    const documentId = record.id;
+    if (!documentId) {
+      messageApi.error("Cannot download document.");
+      return;
+    }
+    await documentService.downloadDocument(documentId);
+  }
+
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      ellipsis: {
-        showTitle: false,
-      },
       render: (name: string) => (
         <Tooltip placement="topLeft" title={name}>
           {name}
@@ -187,17 +196,23 @@ const ManagePage: React.FC = () => {
       title: "Actions",
       dataIndex: "actions",
       key: "actions",
-      width: 100,
+      // width: 100,
       render: (_: any, record: any) => (
         <Space>
           <Button
             type="text"
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownloadDocument(record)}
+          />
+          <Button
+            type="text"
             icon={<EditOutlined />}
             onClick={() => {
-              console.log("Edit document:", record);
+              navigate(`/document/${record.id}/edit`);
             }}
           />
           <Button
+            danger
             type="text"
             icon={<DeleteOutlined />}
             onClick={() => {
@@ -260,10 +275,11 @@ const ManagePage: React.FC = () => {
               type="text"
               icon={<EditOutlined />}
               onClick={() => {
-                console.log("Edit document:", record);
+                navigate(`/document/${record.id}/edit`);
               }}
             />
             <Button
+              danger
               type="text"
               icon={<DeleteOutlined />}
               onClick={() => {
@@ -282,6 +298,7 @@ const ManagePage: React.FC = () => {
           background: "transparent",
         }}
       >
+        {contextHolder}
         <Title level={3}>Documents</Title>
 
         <Space>
@@ -326,6 +343,7 @@ const ManagePage: React.FC = () => {
         background: "transparent",
       }}
     >
+      {contextHolder}
       <Flex
         justify="space-between"
         align="center"

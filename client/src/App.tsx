@@ -15,6 +15,8 @@ import DocumentLayout from "./layouts/DocumentLayout";
 import OverviewDocumentPage from "./pages/Document/OverviewPage.js";
 import CreateDocumentPage from "./pages/Dashboard/CreateDocumentPage.js";
 import BookmarkPage from "./pages/Dashboard/BookmarkPage.js";
+import EditDocumentPage from "./pages/Document/EditDocumentPage.js";
+import UploadFilePage from "./pages/Document/UploadFilePage.js";
 
 function App() {
   return (
@@ -124,7 +126,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />}></Route>
 
             <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route path="" element={<OverviewDashboardPage />} />
+              <Route path="" element={<ManagePage />} />
               <Route
                 path="overview"
                 element={<OverviewDashboardPage />}
@@ -142,8 +144,9 @@ function App() {
             </Route>
 
             <Route path="/document/:id" element={<DocumentLayout />}>
-              <Route path="" element={<OverviewDocumentPage />}></Route>
               <Route path="overview" element={<OverviewDocumentPage />}></Route>
+              <Route path="edit" element={<EditDocumentPage />} />
+              <Route path="upload" element={<UploadFilePage />} />
             </Route>
           </Routes>
         </BrowserRouter>

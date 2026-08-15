@@ -16,15 +16,15 @@ import {
 } from "antd";
 import type { MenuProps } from "antd";
 import {
-  BellOutlined,
-  QuestionCircleOutlined,
-  SearchOutlined,
   LogoutOutlined,
   UserOutlined,
   CommentOutlined,
   MenuOutlined,
   EyeOutlined,
   ArrowLeftOutlined,
+  EditOutlined,
+  UploadOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -50,37 +50,50 @@ const userMenu = {
   ],
 };
 
-const siderItems: MenuItem[] = [
-  {
-    key: "back",
-    icon: <ArrowLeftOutlined />,
-    label: "Back",
-  },
-  {
-    key: "overview",
-    icon: <EyeOutlined />,
-    label: "Overview",
-  },
-];
-
 const DocumentLayout: React.FC = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
   const navigate = useNavigate();
   const screens = useBreakpoint();
 
   const currentYear = new Date().getFullYear();
-
+  const isEdit = window.location.href.split("/").at(-1) === "edit";
   const [isModalOpen, setModalOpen] = useState(false);
   const [collsapsed, setCollapsed] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
+
+  const siderItems: MenuItem[] = [
+    {
+      key: "back",
+      icon: <ArrowLeftOutlined />,
+      label: "Back",
+    },
+    {
+      key: "overview",
+      icon: <EyeOutlined />,
+      label: "Overview",
+    },
+    {
+      key: "edit",
+      icon: <EditOutlined />,
+      label: "Edit",
+      disabled: !isEdit,
+      children: [
+        {
+          key: "upload",
+          icon: <UploadOutlined />,
+          label: "Upload file",
+        },
+      ],
+    },
+  ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     if (e.key == "back") {
       navigate(-1);
     }
+    navigate(`${e.key}`);
   };
 
   const handleCloseModal = () => {
@@ -169,9 +182,9 @@ const DocumentLayout: React.FC = () => {
           >
             <Content
               style={{
-                margin: "8px 8px 0",
+                padding: "8px 8px 0",
                 overflow: "auto",
-                borderRadius: borderRadiusLG,
+                // borderRadius: borderRadiusLG,
                 background: colorBgContainer,
               }}
             >
@@ -265,9 +278,6 @@ const DocumentLayout: React.FC = () => {
         </div>
         <div style={{ flex: 1 }}></div>
         <Space>
-          <Button icon={<SearchOutlined />}></Button>
-          <Button icon={<BellOutlined />}></Button>
-          <Button icon={<QuestionCircleOutlined />}></Button>
           <div>
             <Dropdown menu={userMenu} placement="bottomRight">
               <div

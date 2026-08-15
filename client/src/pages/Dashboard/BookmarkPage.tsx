@@ -260,7 +260,7 @@ const BookmarkPage: React.FC = () => {
           background: "transparent",
         }}
       >
-        <Title level={3}>Documents</Title>
+        <Title level={3}>Bookmarks</Title>
 
         <Space>
           <Radio.Group defaultValue="list" buttonStyle="solid" disabled>
@@ -309,7 +309,7 @@ const BookmarkPage: React.FC = () => {
         align="center"
         style={{ marginBottom: "16px" }}
       >
-        <Title level={3}>Documents</Title>
+        <Title level={3}>Bookmarks</Title>
 
         <Space>
           <Radio.Group defaultValue="list" buttonStyle="solid" disabled>

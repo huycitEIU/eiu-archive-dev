@@ -14,8 +14,6 @@ import {
   Space,
   Spin,
   Table,
-  Tag,
-  Tooltip,
   message,
   Typography,
 } from "antd";
@@ -25,16 +23,13 @@ import type { OverviewDocument } from "../../types/document";
 import type { FileInfo } from "../../types/file";
 import type { ColumnsType } from "antd/es/table";
 import {
-  BookOutlined,
-  BookTwoTone,
+  DeleteOutlined,
   DownloadOutlined,
   EyeOutlined,
-  FlagTwoTone,
-  UserOutlined,
 } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import documentService from "../../services/documentService";
-import Description from "./components/Description";
+import Description from "../Dashboard/components/Description";
 import type { Category } from "../../types/category";
 import categoryService from "../../services/categoryService";
 import { fileService } from "../../services/fileService";
@@ -69,7 +64,6 @@ const columns: ColumnsType<FileInfo> = [
     render: (_: any, record: FileInfo) => (
       <Space>
         <Button
-          size="small"
           type="text"
           onClick={async () => {
             await fileService.downloadFileById(record.id);
@@ -79,6 +73,9 @@ const columns: ColumnsType<FileInfo> = [
         </Button>
         <Button disabled type="text">
           <EyeOutlined />
+        </Button>
+        <Button danger type="text">
+          <DeleteOutlined />
         </Button>
       </Space>
     ),
@@ -99,7 +96,7 @@ const convertFileSize = (size: number): string => {
 
 const reportOptions: string[] = ["Selection 1", "Selection 2", "Selection 3"];
 
-const OverviewPage: React.FC = () => {
+const EditDocumentPage: React.FC = () => {
   const sceens = Grid.useBreakpoint();
   const [messageApi, messageHolder] = message.useMessage();
   const [isOpenReport, setReportOpen] = useState(false);
@@ -109,7 +106,6 @@ const OverviewPage: React.FC = () => {
   );
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const { id } = useParams<{ id: string }>();
 
   const handleOpenReport = (): void => {
@@ -124,10 +120,6 @@ const OverviewPage: React.FC = () => {
         setDocumentData(await documentService.getDocumentById(id));
         setCategoryData(await categoryService.getCategories());
         setFileList(await fileService.getFilesByDocumentId(id));
-
-        const isBookmarked = await documentService.checkBookmark(id);
-        console.log(isBookmarked);
-        setIsBookmarked(isBookmarked);
       } catch (error) {
         console.log(error);
       } finally {
@@ -137,22 +129,6 @@ const OverviewPage: React.FC = () => {
 
     fetchData();
   }, [id]);
-
-  const handleBookmark = async (): Promise<void> => {
-    const documentId = documentData?.id;
-    if (!documentId) {
-      messageApi.error("Cannot bookmark document.");
-      return;
-    }
-
-    const isBookmarked = await documentService.bookmark(documentId);
-    setIsBookmarked(isBookmarked);
-    if (isBookmarked) {
-      messageApi.success(`Bookmark document: ${documentData.title}`);
-    } else {
-      messageApi.info(`Unbookmark document: ${documentData.title}`);
-    }
-  };
 
   async function handleDownloadDocument() {
     const documentId = documentData?.id;
@@ -204,36 +180,6 @@ const OverviewPage: React.FC = () => {
             </Form>
           </Modal>
           <Layout.Content>
-            <Title level={4}>Author</Title>
-            <Flex justify="space-between" align="center">
-              <Space>
-                <Avatar size={"large"}>
-                  <UserOutlined />
-                </Avatar>
-
-                <Space vertical>
-                  <Text>
-                    <strong>{documentData?.user.username}</strong>
-                    <Tag color={"green"}>{documentData?.user.role}</Tag>
-                  </Text>
-                  <Text>{documentData?.user.email}</Text>
-                </Space>
-              </Space>
-              <Space>
-                <Tooltip title="Bookmark">
-                  <Button type="text" size="large" onClick={handleBookmark}>
-                    {isBookmarked ? <BookTwoTone /> : <BookOutlined />}
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Report">
-                  <Button onClick={handleOpenReport} type="text" size="large">
-                    <FlagTwoTone twoToneColor={"red"} />
-                  </Button>
-                </Tooltip>
-              </Space>
-            </Flex>
-
-            <Divider></Divider>
             <Title level={4}>Information</Title>
             <Flex vertical={!sceens.md}>
               <Card loading={loading} style={{ flex: 1 }}>
@@ -326,4 +272,4 @@ const OverviewPage: React.FC = () => {
   );
 };
 
-export default OverviewPage;
+export default EditDocumentPage;

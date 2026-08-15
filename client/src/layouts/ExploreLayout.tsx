@@ -16,9 +16,6 @@ import {
 } from "antd";
 import type { MenuProps } from "antd";
 import {
-  BellOutlined,
-  QuestionCircleOutlined,
-  SearchOutlined,
   LogoutOutlined,
   UserOutlined,
   CommentOutlined,
@@ -295,9 +292,6 @@ const ExploreLayout: React.FC = () => {
         </div>
         <div style={{ flex: 1 }}></div>
         <Space>
-          <Button icon={<SearchOutlined />}></Button>
-          <Button icon={<BellOutlined />}></Button>
-          <Button icon={<QuestionCircleOutlined />}></Button>
           <div>
             <Dropdown menu={userMenu} placement="bottomRight">
               <div

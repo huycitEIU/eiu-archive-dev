@@ -81,6 +81,33 @@ const documentService = {
       throw new Error("Failed to fetch document information.");
     }
   },
+  downloadDocument: async (documentId: string) => {
+    const response = await axios.get(
+      `${API_URL}/api/document/${documentId}/download-all`,
+      {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    );
+
+    const blob = new Blob([response.data], {
+      type: "application/zip",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${documentId}.zip`;
+
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
   bookmark: async (documentId: string): Promise<boolean> => {
     try {
       const res = await axios.post(

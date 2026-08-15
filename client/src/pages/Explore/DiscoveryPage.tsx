@@ -17,7 +17,7 @@ const DiscoveryPage: React.FC = () => {
 
   const handleCardClick = (id: string) => {
     console.log("Clicked: ", id);
-    navigate(`/document/${id}`);
+    navigate(`/document/${id}/overview`);
   };
 
   React.useEffect(() => {

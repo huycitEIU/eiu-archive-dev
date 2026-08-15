@@ -60,24 +60,31 @@ const DocumentCard = ({
       hoverable
       style={{ width: screens.md ? "30%" : "100%", margin: "auto" }}
       cover={
-        coverUrl == "/" ? (
-          <div
-            style={{
-              ...coverStyle,
-              backgroundColor: randomCorlor,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: 24,
-              fontWeight: "bold",
-            }}
-          >
-            {name.split(" ")[0]}
-          </div>
-        ) : (
-          <img style={coverStyle} draggable={false} alt={name} src={coverUrl} />
-        )
+        screens.md ? (
+          coverUrl == "/" ? (
+            <div
+              style={{
+                ...coverStyle,
+                backgroundColor: randomCorlor,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontSize: 24,
+                fontWeight: "bold",
+              }}
+            >
+              {name.split(" ")[0]}
+            </div>
+          ) : (
+            <img
+              style={coverStyle}
+              draggable={false}
+              alt={name}
+              src={coverUrl}
+            />
+          )
+        ) : null
       }
       onClick={() => onClick?.(id)}
     >

@@ -68,15 +68,9 @@ const columns: ColumnsType<FileInfo> = [
           onClick={async () => {
             await fileService.downloadFileById(record.id);
           }}
-        >
-          <DownloadOutlined />
-        </Button>
-        <Button disabled type="text">
-          <EyeOutlined />
-        </Button>
-        <Button danger type="text">
-          <DeleteOutlined />
-        </Button>
+          icon={<DownloadOutlined />}
+        ></Button>
+        <Button disabled type="text" icon={<EyeOutlined />}></Button>
       </Space>
     ),
   },

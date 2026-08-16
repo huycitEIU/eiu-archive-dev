@@ -282,6 +282,37 @@ export const documentsController = {
   getDocumentCategories,
   getFilesByDocumentId,
   downloadFileById,
+  updateDocument: async (
+    req: Request<
+      { id: string },
+      {},
+      { title: string; description: string; categoryId: string }
+    >,
+    res: Response,
+  ) => {
+    try {
+      const { id } = req.params;
+      const { title, description, categoryId } = req.body;
+
+      await documentService.updateDocument(id, {
+        title,
+        description,
+        categoryId,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Updated successful",
+      });
+    } catch (err) {
+      logger.error(err, "Document controller");
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Error while updating document",
+      });
+    }
+  },
+
   rateDocument: async (
     req: Request<{ id: string }, {}, { rating: number }>,
     res: Response,

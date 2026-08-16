@@ -10,6 +10,21 @@ export const documentService = {
   rate: async (documentId: string, userId: string, rating: number) => {
     return await documentRepository.rate(documentId, userId, rating);
   },
+  updateDocument: async (
+    documentId: string,
+    content: { title: string; description: string; categoryId: string },
+  ) => {
+    try {
+      await documentRepository.updateDocument(documentId, {
+        title: content.title,
+        description: content.description,
+        categoryId: content.categoryId,
+      });
+    } catch (err) {
+      logger.error(err, "Document service: ");
+      throw new Error("An error occurred while updating document.");
+    }
+  },
   createDocument: async (data: InsertDocumentData) => {
     try {
       const newDocument = await documentRepository.insertDocument({

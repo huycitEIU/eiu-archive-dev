@@ -31,10 +31,10 @@ router.get("/all", documentsController.getAllDocuments);
 router.get("/:id", documentsController.getDocumentById);
 router.get("/:id/download-all", documentsController.downloadAll);
 
+router.put("/:id/update", documentsController.updateDocument);
+
 router.delete("/:documentId", documentsController.deleteDocumentById);
 
 // DELETE /api/documents/:documentId/rating
-// POST   /api/documents/:documentId/rating
-// GET    /api/documents/:documentId/rating
 
 export default router;

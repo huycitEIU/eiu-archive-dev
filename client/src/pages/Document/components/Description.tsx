@@ -15,9 +15,8 @@ const Description = ({ documentData, categoryData }: DescriptionProps) => {
   }
 
   const categoryName =
-    categoryData.find((category) => (category.id = documentData.categoryId))
+    categoryData.find((category) => category.id == documentData.categoryId)
       ?.name ?? "Unknown";
-
   return (
     <>
       <Paragraph>{documentData.description}</Paragraph>

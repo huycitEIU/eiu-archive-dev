@@ -8,6 +8,23 @@ import type {
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const documentService = {
+  updateDocumentInformation: async (
+    documentId: string,
+    title: string,
+    description: string,
+    categoryId: string,
+  ) => {
+    const res = await axios.put(
+      `${API_URL}/api/document/${documentId}/update`,
+      { title, description, categoryId },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    );
+    return res.data.success;
+  },
   createDocument: async (document: CreateDocumentData): Promise<string> => {
     try {
       const res = await axios.post(`${API_URL}/api/document/create`, document, {

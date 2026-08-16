@@ -107,7 +107,7 @@ const OverviewPage: React.FC = () => {
   const [documentData, setDocumentData] = useState<OverviewDocument | null>(
     null,
   );
-  const [categoryData, setCategoryData] = useState<Category[] | null>(null);
+  const [categoryData, setCategoryData] = useState<Category[]>([]);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [currentRating, setCurrentRating] = useState(0);
@@ -125,12 +125,12 @@ const OverviewPage: React.FC = () => {
       setLoading(true);
       try {
         const document = await documentService.getDocumentById(id);
+        const categories = await categoryService.getCategories();
         setDocumentData(document);
-        setCategoryData(await categoryService.getCategories());
+        setCategoryData(categories);
         setFileList(await fileService.getFilesByDocumentId(id));
 
         const isBookmarked = await documentService.checkBookmark(id);
-        console.log(isBookmarked);
         setIsBookmarked(isBookmarked);
         setCurrentRatingCount(document.ratingCount);
         setCurrentRating(document.averageRating);

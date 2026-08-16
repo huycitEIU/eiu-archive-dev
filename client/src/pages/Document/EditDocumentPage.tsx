@@ -29,7 +29,7 @@ import {
 } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import documentService from "../../services/documentService";
-import Description from "../Dashboard/components/Description";
+import Description from "./components/Description";
 import type { Category } from "../../types/category";
 import categoryService from "../../services/categoryService";
 import { fileService } from "../../services/fileService";
@@ -38,21 +38,21 @@ const { Title, Text } = Typography;
 
 const columns: ColumnsType<FileInfo> = [
   {
+    key: "name",
     title: "Name",
     dataIndex: "name",
-    key: "name",
     width: "50%",
     render: (value) => <a>{value}</a>,
   },
   {
+    key: "type",
     title: "Type",
     dataIndex: "type",
-    key: "type",
   },
   {
+    key: "size",
     title: "Size",
     dataIndex: "size",
-    key: "size",
     render: (value) => {
       return convertFileSize(value);
     },
@@ -106,7 +106,7 @@ const EditDocumentPage: React.FC = () => {
   );
   const [currentRating, setCurrentRating] = useState(0);
   const [currentRatingCount, setCurrentRatingCount] = useState(0);
-  const [categoryData, setCategoryData] = useState<Category[] | null>(null);
+  const [categoryData, setCategoryData] = useState<Category[]>([]);
   const [fileList, setFileList] = useState<FileInfo[]>([]);
   const { id } = useParams<{ id: string }>();
 
@@ -120,8 +120,9 @@ const EditDocumentPage: React.FC = () => {
       setLoading(true);
       try {
         const document = await documentService.getDocumentById(id);
+        const categories = await categoryService.getCategories();
         setDocumentData(document);
-        setCategoryData(await categoryService.getCategories());
+        setCategoryData(categories);
         setFileList(await fileService.getFilesByDocumentId(id));
         setCurrentRatingCount(document.ratingCount);
         setCurrentRating(document.averageRating);

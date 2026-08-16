@@ -24,6 +24,7 @@ import {
   ArrowLeftOutlined,
   EditOutlined,
   UploadOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -84,13 +85,20 @@ const DocumentLayout: React.FC = () => {
           icon: <UploadOutlined />,
           label: "Upload file",
         },
+        {
+          key: "information",
+          icon: <InfoCircleOutlined />,
+          label: "Information",
+        },
       ],
     },
   ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     if (e.key == "back") {
-      navigate(-1);
+      if (isEdit) navigate(`/dashboard/manage`);
+      else navigate(`/explore`);
+      return;
     }
     navigate(`${e.key}`);
   };

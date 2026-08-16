@@ -17,6 +17,7 @@ import CreateDocumentPage from "./pages/Dashboard/CreateDocumentPage.js";
 import BookmarkPage from "./pages/Dashboard/BookmarkPage.js";
 import EditDocumentPage from "./pages/Document/EditDocumentPage.js";
 import UploadFilePage from "./pages/Document/UploadFilePage.js";
+import { EditInformationPage } from "./pages/Document/EditInfomationPage.js";
 
 function App() {
   return (
@@ -147,6 +148,7 @@ function App() {
               <Route path="overview" element={<OverviewDocumentPage />}></Route>
               <Route path="edit" element={<EditDocumentPage />} />
               <Route path="upload" element={<UploadFilePage />} />
+              <Route path="information" element={<EditInformationPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

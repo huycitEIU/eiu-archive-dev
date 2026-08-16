@@ -1,4 +1,4 @@
-import { Form, Input, Select, Upload, Typography, Button } from "antd";
+import { Form, Input, Select, Upload, Typography, Button, message } from "antd";
 import React from "react";
 import type { UploadFile, UploadProps } from "antd";
 
@@ -10,6 +10,7 @@ import documentService from "../../services/documentService";
 import type { RcFile } from "antd/es/upload";
 import type { CreateDocumentData } from "../../types/document";
 import { fileService } from "../../services/fileService";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -17,6 +18,8 @@ const CreateDocumentPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const fectCategories = async () => {
@@ -52,17 +55,32 @@ const CreateDocumentPage = () => {
       .filter((f): f is RcFile => !!f);
 
     try {
+      setLoading(true);
       const documentId = await documentService.createDocument(document);
       await fileService.uploadFile(documentId, rcFiles);
+      form.resetFields();
+      messageApi.success("Created document successful");
+      navigate(`/document/${documentId}/edit`);
     } catch (err) {
       console.log("Failed to creaet document", err);
+      messageApi.error("Created document failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
+      {contextHolder}
       <Title level={2}>Create Document</Title>
-      <Form form={form} layout="vertical">
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        onFinishFailed={() => {
+          messageApi.warning("Please enter document information");
+        }}
+      >
         <Form.Item
           label="Title"
           name="title"
@@ -113,11 +131,11 @@ const CreateDocumentPage = () => {
         </Form.Item>
         <Form.Item>
           <Button
+            loading={loading}
             block
             type="primary"
             htmlType="submit"
             size="large"
-            onClick={handleSubmit}
           >
             Create
           </Button>

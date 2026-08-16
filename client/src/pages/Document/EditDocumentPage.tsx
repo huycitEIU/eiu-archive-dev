@@ -22,11 +22,7 @@ import React, { useState } from "react";
 import type { OverviewDocument } from "../../types/document";
 import type { FileInfo } from "../../types/file";
 import type { ColumnsType } from "antd/es/table";
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { DownloadOutlined, EyeOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import documentService from "../../services/documentService";
 import Description from "./components/Description";
